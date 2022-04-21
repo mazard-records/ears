@@ -1,0 +1,224 @@
+{
+   "count" : 2,
+   "next" : null,
+   "order" : [
+      "tracks"
+   ],
+   "page" : "1/1",
+   "per_page" : 25,
+   "previous" : null,
+   "tracks" : [
+      {
+         "artists" : [
+            {
+               "id" : 202767,
+               "image" : {
+                  "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/3d5d09a1-f5bd-454f-ad54-fc325d8c4962.jpg",
+                  "id" : 23572940,
+                  "uri" : "https://geo-media.beatport.com/image_size/590x404/3d5d09a1-f5bd-454f-ad54-fc325d8c4962.jpg"
+               },
+               "name" : "Demuja",
+               "slug" : "demuja",
+               "url" : "https://api.beatport.com/v4/catalog/artists/202767/"
+            }
+         ],
+         "available_worldwide" : false,
+         "bpm" : 127,
+         "catalog_number" : "10212459",
+         "current_status" : {
+            "id" : 10,
+            "name" : "General Content",
+            "url" : "https://api.beatport.com/v4/auxiliary/current-status/10/"
+         },
+         "encoded_date" : "2021-11-23T09:05:34-07:00",
+         "exclusive" : false,
+         "free_download_end_date" : null,
+         "free_download_start_date" : null,
+         "free_downloads" : [],
+         "genre" : {
+            "id" : 5,
+            "name" : "House",
+            "slug" : "house",
+            "url" : "https://api.beatport.com/v4/catalog/genres/5/"
+         },
+         "id" : 15960398,
+         "image" : {
+            "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/d4740d12-47b5-4083-a873-4e4b5fef15b1.png",
+            "id" : 29966053,
+            "uri" : "https://geo-media.beatport.com/image_size/1500x250/d4740d12-47b5-4083-a873-4e4b5fef15b1.png"
+         },
+         "is_available_for_streaming" : true,
+         "is_hype" : false,
+         "isrc" : "TCAFX2150903",
+         "key" : {
+            "camelot_letter" : "B",
+            "camelot_number" : 6,
+            "chord_type" : {
+               "id" : 2,
+               "name" : "Major",
+               "url" : "https://api.beatport.com/v4/catalog/chord-types/2/"
+            },
+            "id" : 18,
+            "is_flat" : true,
+            "is_sharp" : false,
+            "letter" : "B",
+            "name" : "Bb Major",
+            "url" : "https://api.beatport.com/v4/catalog/keys/18/"
+         },
+         "label_track_identifier" : "10912091",
+         "length" : "7:04",
+         "length_ms" : 424751,
+         "mix_name" : "Original Mix",
+         "name" : "Off to Paradise",
+         "new_release_date" : "2021-12-03",
+         "pre_order" : false,
+         "pre_order_date" : null,
+         "price" : {
+            "code" : "EUR",
+            "display" : "€1.29",
+            "symbol" : "€",
+            "value" : 1.29
+         },
+         "publish_date" : "2021-12-03",
+         "publish_status" : "published",
+         "release" : {
+            "id" : 3579506,
+            "image" : {
+               "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/c6051316-2236-43e4-a796-1321280af46b.jpg",
+               "id" : 29966015,
+               "uri" : "https://geo-media.beatport.com/image_size/1400x1400/c6051316-2236-43e4-a796-1321280af46b.jpg"
+            },
+            "label" : {
+               "id" : 82641,
+               "image" : {
+                  "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/98022960-92ab-4517-a40d-2eb06e52d43a.jpg",
+                  "id" : 23324050,
+                  "uri" : "https://geo-media.beatport.com/image_size/500x500/98022960-92ab-4517-a40d-2eb06e52d43a.jpg"
+               },
+               "name" : "MUJA",
+               "slug" : "muja"
+            },
+            "name" : "Off to Paradise",
+            "slug" : "off-to-paradise"
+         },
+         "remixers" : [],
+         "sale_type" : {
+            "id" : 1,
+            "name" : "purchase",
+            "url" : "https://api.beatport.com/v4/auxiliary/sale-types/1/"
+         },
+         "sample_end_ms" : 289900,
+         "sample_start_ms" : 169900,
+         "sample_url" : "https://geo-samples.beatport.com/track/d4740d12-47b5-4083-a873-4e4b5fef15b1.LOFI.mp3",
+         "slug" : "off-to-paradise",
+         "sub_genre" : null,
+         "url" : "https://api.beatport.com/v4/catalog/tracks/15960398/"
+      },
+      {
+         "artists" : [
+            {
+               "id" : 202767,
+               "image" : {
+                  "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/3d5d09a1-f5bd-454f-ad54-fc325d8c4962.jpg",
+                  "id" : 23572940,
+                  "uri" : "https://geo-media.beatport.com/image_size/590x404/3d5d09a1-f5bd-454f-ad54-fc325d8c4962.jpg"
+               },
+               "name" : "Demuja",
+               "slug" : "demuja",
+               "url" : "https://api.beatport.com/v4/catalog/artists/202767/"
+            }
+         ],
+         "available_worldwide" : false,
+         "bpm" : 127,
+         "catalog_number" : "10212461",
+         "current_status" : {
+            "id" : 10,
+            "name" : "General Content",
+            "url" : "https://api.beatport.com/v4/auxiliary/current-status/10/"
+         },
+         "encoded_date" : "2021-11-23T09:35:01-07:00",
+         "exclusive" : false,
+         "free_download_end_date" : null,
+         "free_download_start_date" : null,
+         "free_downloads" : [],
+         "genre" : {
+            "id" : 5,
+            "name" : "House",
+            "slug" : "house",
+            "url" : "https://api.beatport.com/v4/catalog/genres/5/"
+         },
+         "id" : 15960442,
+         "image" : {
+            "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/1978f53e-a347-4899-b204-1dde1b89a7cc.png",
+            "id" : 29966137,
+            "uri" : "https://geo-media.beatport.com/image_size/1500x250/1978f53e-a347-4899-b204-1dde1b89a7cc.png"
+         },
+         "is_available_for_streaming" : true,
+         "is_hype" : false,
+         "isrc" : "TCAFX2150903",
+         "key" : {
+            "camelot_letter" : "B",
+            "camelot_number" : 6,
+            "chord_type" : {
+               "id" : 2,
+               "name" : "Major",
+               "url" : "https://api.beatport.com/v4/catalog/chord-types/2/"
+            },
+            "id" : 18,
+            "is_flat" : true,
+            "is_sharp" : false,
+            "letter" : "B",
+            "name" : "Bb Major",
+            "url" : "https://api.beatport.com/v4/catalog/keys/18/"
+         },
+         "label_track_identifier" : "10912091",
+         "length" : "7:04",
+         "length_ms" : 424751,
+         "mix_name" : "Original Mix",
+         "name" : "Off to Paradise",
+         "new_release_date" : "2021-12-10",
+         "pre_order" : false,
+         "pre_order_date" : null,
+         "price" : {
+            "code" : "EUR",
+            "display" : "€1.29",
+            "symbol" : "€",
+            "value" : 1.29
+         },
+         "publish_date" : "2021-12-10",
+         "publish_status" : "published",
+         "release" : {
+            "id" : 3579528,
+            "image" : {
+               "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/fa858cf0-342b-48b8-8c7a-153993e6e263.jpg",
+               "id" : 29966107,
+               "uri" : "https://geo-media.beatport.com/image_size/1400x1400/fa858cf0-342b-48b8-8c7a-153993e6e263.jpg"
+            },
+            "label" : {
+               "id" : 82641,
+               "image" : {
+                  "dynamic_uri" : "https://geo-media.beatport.com/image_size/{w}x{h}/98022960-92ab-4517-a40d-2eb06e52d43a.jpg",
+                  "id" : 23324050,
+                  "uri" : "https://geo-media.beatport.com/image_size/500x500/98022960-92ab-4517-a40d-2eb06e52d43a.jpg"
+               },
+               "name" : "MUJA",
+               "slug" : "muja"
+            },
+            "name" : "Green Tiger",
+            "slug" : "green-tiger"
+         },
+         "remixers" : [],
+         "sale_type" : {
+            "id" : 1,
+            "name" : "purchase",
+            "url" : "https://api.beatport.com/v4/auxiliary/sale-types/1/"
+         },
+         "sample_end_ms" : 289900,
+         "sample_start_ms" : 169900,
+         "sample_url" : "https://geo-samples.beatport.com/track/1978f53e-a347-4899-b204-1dde1b89a7cc.LOFI.mp3",
+         "slug" : "off-to-paradise",
+         "sub_genre" : null,
+         "url" : "https://api.beatport.com/v4/catalog/tracks/15960442/"
+      }
+   ]
+}
