@@ -30,13 +30,6 @@ class BeatportTransport(
             },
         )
 
-    #def playlist(self, name_or_int: Union[int, str]) -> BeatportPlaylistView:
-    #    if isinstance(name_or_int, int):
-    #        playlist_id = name_or_int
-    #    else:
-    #        raise NotImplementedError()
-    #    return BeatportPlaylistView(self._transport, playlist_id)
-
     @property
     def transport(self) -> Client:
         return self._transport

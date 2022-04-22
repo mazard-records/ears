@@ -1,13 +1,14 @@
-
-
-from typing import Any, Dict
 from base64 import b64decode
 from json import loads
 from typing import Any, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, BaseSettings
 
 from transport import BeatportTransport
+
+
+class WantlistSettings(BaseSettings):
+    wantlist: int
 
 
 class WantlistQuery(BaseModel):
@@ -23,7 +24,8 @@ class WantlistQuery(BaseModel):
 
 
 def entrypoint(event: Dict[str, Any], _: Any) -> None:
-    # TODO: add error handling.
+    # TODO: add complex error handling.
+    settings = WantlistSettings()
     query = WantlistQuery.from_event(event)
     transport = BeatportTransport()
     transport.login()
@@ -32,6 +34,7 @@ def entrypoint(event: Dict[str, Any], _: Any) -> None:
         # TODO: notify
         pass
     else:
-        # TODO: fetch playlist_id
-        transport.add_track_to_playlist(..., [tracks[0].id])
-        
+        transport.add_track_to_playlist(
+            settings.wantlist,
+            [tracks[0].id],
+        )

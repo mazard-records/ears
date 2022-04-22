@@ -1,11 +1,28 @@
 from abc import ABC, abstractproperty
-from typing import List
+from typing import Any, Callable, List
 from urllib.parse import urlencode
 
 from httpx import Client    
 
 from ._models import TrackSearch
 from ._settings import LoginSettings
+
+
+AnyCallable = Callable[..., Any]
+
+
+def trace(name: str) -> AnyCallable:
+    def decorator(method: AnyCallable) -> AnyCallable:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            try:
+                return method(*args, **kwargs)
+            except Exception as e:
+                # NOTE: log to stdout, consider adding JSON log
+                #       with complex tracing.
+                print(f"{name} - {e}")
+                raise
+        return wrapper
+    return decorator
 
 
 class TransportProvider(ABC):
@@ -17,6 +34,7 @@ class TransportProvider(ABC):
 class AuthorizationTransportMixin(TransportProvider):
     """ Transport mixin that provides authorization process. """
 
+    @trace("AuthorizationTransportMixin#login")
     def login(self) -> None:
         # NOTE: perform some prior call to fill cookies
         #       and get a valid CSRF token.
@@ -44,6 +62,8 @@ class AuthorizationTransportMixin(TransportProvider):
 
 class SearchTransportMixin(TransportProvider):
     """ Transport mixin that provides track Search feature from transport. """
+
+    @trace("SearchTransportMixin#search")
     def search(self, artist: str, track: str) -> List[TrackSearch]:
         query = (
             "type=tracks"
@@ -58,6 +78,7 @@ class SearchTransportMixin(TransportProvider):
 class PlaylistTransportMixin(object):
     """ Transport mixin for interacting with a playlist. """
     
+    @trace("PlaylistTransportMixin#add_track_to_playlist")
     def add_track_to_playlist(self, playlist_id: int, tracks: List[int]) -> None:
         endpoint = f"/v4/my/playlists/{playlist_id}/tracks/bulk"
         payload = {"track_ids": tracks}

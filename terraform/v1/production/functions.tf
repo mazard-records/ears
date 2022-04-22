@@ -17,7 +17,9 @@ resource "google_cloudfunctions_function" "beatport" {
   description = "Beatport remote control function"
   runtime     = "python39"
 
-  environment_variables = {}
+  environment_variables = {
+    WANTLIST = var.beatport_wantlist
+  }
 
   dynamic "secret_environment_variables" {
     for_each = toset(["username", "password"])
@@ -38,6 +40,6 @@ resource "google_cloudfunctions_function" "beatport" {
 
   event_trigger {
     event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-    resource   = "${google_pubsub_topic.tts.name}"
+    resource   = "${google_pubsub_topic.beatport.name}"
   }
 }
