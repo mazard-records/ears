@@ -1,19 +1,6 @@
-from os import environ
 from typing import List, Optional
 from pydantic import BaseModel
 
-
-class LoginPayload(BaseModel):
-    username: str
-    password: str
-    remember: bool = False
-
-    @classmethod
-    def from_environ(cls) -> "LoginPayload":
-        return cls(
-            username=environ.get("BEATPORT_USERNAME"),
-            password=environ.get("BEATPORT_PASSWORD"),
-        )
 
 class Artist(BaseModel):
     id: int
@@ -27,6 +14,7 @@ class Track(BaseModel):
     id: int
     name: str
     mix_name: str
+
 
 class TrackSearch(BaseModel):
     count: int
