@@ -1,10 +1,3 @@
-terraform {
-  backend "gcs" {
-    bucket  = "mzr-ears-p-gcs-tfstate"
-    prefix  = "ears"
-  }
-}
-
 locals {
   project = "mzr-ears-production"
   region  = "europe-west1"

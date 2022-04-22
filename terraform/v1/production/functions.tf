@@ -1,8 +1,8 @@
 data "archive_file" "functions" {
   for_each    = toset(["beatport"])
   type        = "zip"
-  source_dir  = "${path.module}/../functions/${each.key}"
-  output_path = "${path.module}/../functions/${each.key}/build.zip"
+  source_dir  = "${path.module}/../../../functions/${each.key}"
+  output_path = "${path.module}/../../../functions/${each.key}/build.zip"
 }
 
 resource "google_storage_bucket_object" "functions" {

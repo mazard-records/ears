@@ -1,9 +1,3 @@
-resource "google_service_account" "github" {
-  account_id   = "github"
-  display_name = "Github"
-  description  = "Service account for Github Actions CD"
-}
-
 resource "google_service_account" "publisher" {
   account_id   = "publisher"
   display_name = "Publisher"

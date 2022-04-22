@@ -1,0 +1,36 @@
+name: functions
+on:
+  pull_request:
+    branches:    
+      - master
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        functions:
+          - beatport
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip dependencies
+        uses: actions/cache@v1
+        id: requirements
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.functions }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            pip-${{ matrix.functions }}-
+      - name: Install tooling
+        run: pip install black isort mypy
+      - name: Install dependencies
+        run: pip install -r functions/${{ matrix.functions }}/requirements.txt
+        if: steps.requirements.outputs.cache-hit != 'true'
+      - name: Code quality checks
+        run: |
+          black functions/${{ matrix.functions }} --check
+          isort functions/${{ matrix.functions }} --check
+          mypy --strict functions/${{ matrix.functions }}
