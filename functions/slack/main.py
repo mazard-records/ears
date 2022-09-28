@@ -4,7 +4,8 @@ from flask import Request, Response, jsonify
 from httpx import post
 from pydantic import AnyHttpUrl, BaseSettings
 
-from blocks import *
+from slack import SlackRequest
+from slack.blocks import *
 from providers import MatchingTrack
 
 
@@ -52,6 +53,7 @@ def on_matching_event(event: Dict[str, Any], _: Any) -> None:
     response.raise_for_status()
 
 
+@SlackRequest
 def on_interactive_webhook(request: Request) -> Response:
     """
     HTTP endpoint that acknowledge user feedback from Slack.
