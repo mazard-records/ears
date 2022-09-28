@@ -21,6 +21,7 @@ resource "google_project_service" "apis" {
     "servicenetworking",
     "storage",
     "vpcaccess",
+    "workflows",
   ])
 
   service            = "${each.key}.googleapis.com"

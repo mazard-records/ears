@@ -8,7 +8,7 @@ resource "google_compute_global_address" "addresses" {
   for_each   = toset(["IPV4", "IPV6"])
 
   name       = format(module.naming.vpc_address,  "lb${lower(each.key)}")
-  ip_version = "IPV4"
+  ip_version = each.key
 }
 
 resource "google_compute_managed_ssl_certificate" "certificates" {
@@ -42,7 +42,7 @@ resource "google_compute_target_http_proxy" "http_proxy" {
 resource "google_compute_global_forwarding_rule" "https_forwarding_rule" {
   for_each = google_compute_global_address.addresses
 
-  name       = format(module.naming.global_forwarding_rule, "https${each.key}")
+  name       = format(module.naming.global_forwarding_rule, "https-${lower(each.key)}")
   target     = google_compute_target_https_proxy.https.id
   ip_address = each.value.address
   port_range = "443"
@@ -51,7 +51,7 @@ resource "google_compute_global_forwarding_rule" "https_forwarding_rule" {
 resource "google_compute_global_forwarding_rule" "http_forwarding_rule" {
   for_each = google_compute_global_address.addresses
 
-  name       = format(module.naming.global_forwarding_rule, "http${each.key}")
+  name       = format(module.naming.global_forwarding_rule, "http-${lower(each.key)}")
   target     = google_compute_target_http_proxy.http_proxy.id
   ip_address = each.value.address
   port_range = "80"
