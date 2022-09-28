@@ -7,7 +7,7 @@ resource "google_workflows_workflow" "matching" {
 
   description     = "Workflow that attempt to match tracks from Deezer to ${title(each.key)}"
   name            = format(module.naming.workflow, "${each.key}-matching")
-  region          = var.region
+  region          = module.naming.region
   service_account = google_service_account.matching[each.key].email
   source_contents = file("${workflows}/matching-beatport.yaml")
 }

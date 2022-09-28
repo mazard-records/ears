@@ -33,9 +33,13 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
   service_account_email = google_service_account.slack.email
   trigger_http          = null
  
-  event_trigger {
-    event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-    resource   = var.matching_topic
+  dynamic "event_trigger" {
+    for_each = var.matching_topics
+
+    content {
+      event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
+      resource   = event_trigger.key     
+    }
   }
 }
 

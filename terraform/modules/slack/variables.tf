@@ -3,7 +3,7 @@ variable "environment" {
   type        = string
 }
 
-variable "matching_topic" {
-  description = "PubSub matching topic name to listen to"
-  type        = string
+variable "matching_topics" {
+  description = "List of PubSub matching topic name to listen to"
+  type        = list(string)
 }

@@ -1,3 +1,3 @@
-output "topic" {
-  value = google_pubsub_topic.matching.name
+output "topics" {
+  value = [for topic in google_pubsub_topic.matching: topic.name]
 }

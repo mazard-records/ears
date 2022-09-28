@@ -36,7 +36,7 @@ module "slack" {
   source      = "../slack"
   environment = var.environment
 
-  matching_topic = module.matching.topic
+  matching_topics = module.matching.topics
 }
 
 locals {

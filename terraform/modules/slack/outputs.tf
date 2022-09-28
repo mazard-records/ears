@@ -1,3 +1,3 @@
 output "function" {
-  value = google_cloudfunctions_function.slack_matching_feedback.name
+  value = google_cloudfunctions_function.slack_interactive_webhook.name
 }
