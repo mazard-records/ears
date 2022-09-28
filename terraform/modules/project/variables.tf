@@ -1,4 +1,4 @@
-variable "cloudstorage_location" {
+variable "cloudstorage_location" {
   default     = "EU"
   description = "GCS storage location"
   type        = string
