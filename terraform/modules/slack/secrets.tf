@@ -2,7 +2,7 @@ resource "google_secret_manager_secret" "slack_webhook" {
   secret_id = format(module.naming.secret, "slack-webhook")
 
   replication {
-    automatic = false
+    automatic = true
   }
 }
 
