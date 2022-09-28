@@ -20,5 +20,6 @@ resource "google_compute_url_map" "primary" {
         service = google_compute_backend_service.functions[path_rule.key]
       }
     }
+  }
 
 }
