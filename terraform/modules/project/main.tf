@@ -28,12 +28,12 @@ resource "google_project_service" "apis" {
 }
 
 module "matching" {
-  source      = "${path.module}/../matching"
+  source      = "../matching"
   environment = var.environment
 }
 
 module "slack" {
-  source      = "${path.module}/../slack"
+  source      = "../slack"
   environment = var.environment
 
   matching_topic = module.matching.topic
@@ -47,7 +47,7 @@ locals {
 }
 
 module "loadbalancer" {
-  source = "${path.module}/../loadbalancer"
+  source = "../loadbalancer"
   environment = var.environment
 
   functions   = {
