@@ -39,7 +39,9 @@ module "matching" {
   ]
 
   source      = "../matching"
+  application = var.application
   environment = var.environment
+  region      = var.region
 
   function_bucket_name = google_storage_bucket.functions.name
 }
@@ -54,7 +56,9 @@ module "slack" {
   ]
 
   source      = "../slack"
+  application = var.application
   environment = var.environment
+  region      = var.region
 
   function_bucket_name = google_storage_bucket.functions.name
   matching_topics      = module.matching.topics
@@ -74,8 +78,10 @@ module "loadbalancer" {
 
   source = "../loadbalancer"
 
-  environment  = var.environment
+  application = var.application
+  environment = var.environment
   redirect_url = var.redirect_url
+  region      = var.region
 
   functions   = {
     domains = [
