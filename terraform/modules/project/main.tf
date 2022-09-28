@@ -1,16 +1,16 @@
-locals {
-  project = "mzr-ears-production"
-  region  = "europe-west1"
+module "naming" {
+  source      = "../naming"
+  environment = var.environment
 }
 
 provider "google" {
-  project = local.project
-  region  = local.region
+  project = module.naming.project_id
+  region  = module.naming.region
 }
 
 provider "google-beta" {
-  project = local.project
-  region  = local.region
+  project = module.naming.project_id
+  region  = module.naming.region
 }
 
 resource "google_project_service" "apis" {
@@ -25,4 +25,37 @@ resource "google_project_service" "apis" {
 
   service            = "${each.key}.googleapis.com"
   disable_on_destroy = false
+}
+
+module "matching" {
+  source      = "${path.module}/../matching"
+  environment = var.environment
+}
+
+module "slack" {
+  source      = "${path.module}/../slack"
+  environment = var.environment
+
+  matching_topic = module.matching.topic
+}
+
+locals {
+  domain_prefixes = {
+    development = "dev."
+    production  = ""
+  }
+}
+
+module "loadbalancer" {
+  source = "${path.module}/../loadbalancer"
+  environment = var.environment
+
+  functions   = {
+    domains = [
+      "${local.domain_prefixes[var.environment]}functions.${var.domain}"
+    ]
+    targets = {
+      slack = module.slack.function
+    }
+  } 
 }
