@@ -1,0 +1,33 @@
+main:
+  params: [args]
+  steps:
+    - setup:
+        assign:
+          - deezerPlaylistId: ${args.playlistId}
+          - deezerAPI: "https://api.deezer.com"
+    - fetch-access-token:
+        call: googleapis.secretmanager.v1.projects.secrets.versions.accessString
+        args:
+          secret_id: ${args.accessTokenSecret}
+        result: deezerAccessToken
+    - fetch-playlist:
+        call: http.get
+        args:
+          url: ${deezerAPI + "/playlist/" + deezerPlaylistId}
+        result: deezerPlaylist
+    - playlist-matching:
+        for:
+          value: track
+          index: i
+          in: deezerPlaylist.tracks
+          steps:
+            - assign-metadata:
+                assign:
+                  - album: track.album.title
+                  - artist: track.artist.name
+                  - title: track.title
+            - beatport:
+                call:
+            # NOTE: add other provider here.
+
+  
