@@ -20,7 +20,7 @@ resource "google_compute_managed_ssl_certificate" "certificates" {
 }
 
 resource "google_compute_ssl_policy" "modern" {
-  name            = format(module.naming.ssl_policy, var.application)
+  name            = format(module.naming.ssl_policy, "modern")
   profile         = "MODERN"
   min_tls_version = "TLS_1_2"
 }

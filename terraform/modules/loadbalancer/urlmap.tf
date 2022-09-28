@@ -23,3 +23,13 @@ resource "google_compute_url_map" "primary" {
   }
 
 }
+
+resource "google_compute_url_map" "http_redirect" {
+  name    = format(module.naming.url_map, "http")
+
+  default_url_redirect {
+    https_redirect         = true
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+    strip_query            = false
+  }
+}

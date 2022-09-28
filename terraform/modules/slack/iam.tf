@@ -1,5 +1,5 @@
 resource "google_service_account" "slack" {
-  account_id   = "slack"
-  display_name = "Slack"
+  account_id   = "slackbot"
+  display_name = "Slack bot"
   description  = "Slack bot service account"
 }
