@@ -19,8 +19,8 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
     for_each = google_secret_manager_secret.slack
 
     content {
-      key     = "SLACK_${upper(each.key)}"
-      secret  = each.value.secret_id
+      key     = "SLACK_${upper(secret_environment_variables.key)}"
+      secret  = secret_environment_variables.value.secret_id
       version = "latest"
     }
   }
@@ -52,8 +52,8 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
     for_each = google_secret_manager_secret.slack
 
     content {
-      key     = "SLACK_${upper(each.key)}"
-      secret  = each.value.secret_id
+      key     = "SLACK_${upper(secret_environment_variables.key)}"
+      secret  = secret_environment_variables.value.secret_id
       version = "latest"
     }
   }
