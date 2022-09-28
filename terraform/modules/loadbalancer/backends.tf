@@ -3,7 +3,7 @@ resource "google_compute_region_network_endpoint_group" "functions" {
 
   name                  = format(module.naming.network_endpoint_group, "${each.key}")
   network_endpoint_type = "SERVERLESS"
-  region                = var.region
+  region                = module.naming.region
 
   cloud_function {
     function = each.value

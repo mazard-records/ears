@@ -12,7 +12,7 @@ resource "google_compute_global_address" "addresses" {
 }
 
 resource "google_compute_managed_ssl_certificate" "certificates" {
-  name = format(module.naming.ssl, var.application)
+  name = format(module.naming.ssl, "certificates")
 
   managed {
     domains = toset(local.domains)
