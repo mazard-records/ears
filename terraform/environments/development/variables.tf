@@ -15,6 +15,12 @@ variable "domain" {
   type        = string
 }
 
+variable "environment" {
+  default     = "development"
+  description = "Target environment (development, staging, or production)"
+  type        = string
+}
+
 variable "redirect_url" {
   description = "URL to redirect unknown request to"
   type        = string

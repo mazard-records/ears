@@ -3,7 +3,7 @@ variable "application" {
   type        = string
 }
 
-le "environment" {
+variable "environment" {
   description = "Target environment (development, staging, or production)"
   type        = string
 }
