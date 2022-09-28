@@ -15,11 +15,8 @@ main:
         args:
           url: ${deezerAPI + "/playlist/" + deezerPlaylistId}
         result: deezerPlaylist
-    - log-playlist:
-        call: sys.log
-        args:
-            text: ${json.encode_to_string(deezerPlaylist)}
-            severity: INFO
+    - stop:
+        return: ${deezerPlaylist}
     #- playlist-matching:
     #    for:
     #      value: track
