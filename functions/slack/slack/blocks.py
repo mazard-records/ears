@@ -27,7 +27,7 @@ class Blocks(BaseModel):
     blocks: List[Block]
 
 
-class Element(object):
+class Element(BaseModel):
     pass
 
 
