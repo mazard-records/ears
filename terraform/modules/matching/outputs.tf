@@ -1,3 +1,3 @@
 output "topics" {
-  value = [for producer in var.producers: google_pubsub_topic.matching[producer].name]
+  value = [for _, topic in google_pubsub_topic.matching: topic.name]
 }

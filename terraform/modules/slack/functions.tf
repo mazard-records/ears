@@ -65,5 +65,5 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   ingress_settings             = "ALLOW_INTERNAL_ONLY"
   service_account_email        = google_service_account.slack.email
   trigger_http                 = true
-  # https_trigger_security_level = "SECURE_ALWAYS"
+  https_trigger_security_level = "SECURE_ALWAYS"
 }
