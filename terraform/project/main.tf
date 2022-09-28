@@ -39,6 +39,11 @@ module "matching" {
   environment = var.environment
 
   function_bucket_name = google_storage_bucket.functions.name
+
+  providers = {
+    google = google
+    google-beta = google-beta
+  }
 }
 
 module "slack" {
@@ -51,6 +56,11 @@ module "slack" {
 
   function_bucket_name = google_storage_bucket.functions.name
   matching_topics      = module.matching.topics
+
+  providers = {
+    google = google
+    google-beta = google-beta
+  }
 }
 
 locals {
@@ -75,5 +85,10 @@ module "loadbalancer" {
     targets = {
       slack = module.slack.function
     }
-  } 
+  }
+
+  providers = {
+    google = google
+    google-beta = google-beta
+  }
 }
