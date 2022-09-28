@@ -15,10 +15,14 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
   description = "Slack bot for interactive matching notification"
   runtime     = "python39"
 
-  secret_environment_variables {
-    key     = "SLACK_MATCHING_WEBHOOK"
-    secret  = google_secret_manager_secret.slack_webhook.secret_id
-    version = "latest"
+  dynamic "secret_environment_variables" {
+    for_each = google_secret_manager_secret.slack
+
+    content {
+      key     = "SLACK_${upper(each.key)}"
+      secret  = each.value.secret_id
+      version = "latest"
+    }
   }
 
   available_memory_mb   = 128
@@ -44,10 +48,14 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   description = "Slack webhook for receiving interactive user feedback"
   runtime     = "python39"
 
-  secret_environment_variables {
-    key     = "SLACK_MATCHING_WEBHOOK"
-    secret  = google_secret_manager_secret.slack_webhook.secret_id
-    version = "latest"
+  dynamic "secret_environment_variables" {
+    for_each = google_secret_manager_secret.slack
+
+    content {
+      key     = "SLACK_${upper(each.key)}"
+      secret  = each.value.secret_id
+      version = "latest"
+    }
   }
 
   available_memory_mb          = 128

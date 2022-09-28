@@ -2,15 +2,10 @@ from typing import Any, Dict
 
 from flask import Request, Response, jsonify
 from httpx import post
-from pydantic import AnyHttpUrl, BaseSettings
 
-from slack import SlackRequest
+from slack import SlackRequest, SlackSettings
 from slack.blocks import *
 from providers import MatchingTrack
-
-
-class SlackSettings(BaseSettings):
-    SLACK_MATCHING_WEBHOOK: AnyHttpUrl
 
 
 def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
@@ -48,7 +43,7 @@ def on_matching_event(event: Dict[str, Any], _: Any) -> None:
     settings = SlackSettings()
     track = MatchingTrack.from_event(event)
     notification = MatchingTrackNotification(track)
-    response = post(settings.SLACK_MATCHING_WEBHOOK, json=notification.dict())
+    response = post(settings.webhook, json=notification.dict())
     # TODO: error handling with CloudLogging.
     response.raise_for_status()
 
@@ -58,7 +53,6 @@ def on_interactive_webhook(request: Request) -> Response:
     """
     HTTP endpoint that acknowledge user feedback from Slack.
     """
-    # TODO: prevent from unallowed access;
     # TODO: create payload model and evaluate result.
     print(request.get_json())
     return jsonify(None)

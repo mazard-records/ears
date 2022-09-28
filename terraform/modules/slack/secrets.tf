@@ -1,6 +1,6 @@
 resource "google_secret_manager_secret" "slack" {
   for_each = toset([
-    "signing-key",
+    "signing_key",
     "webhook",
   ])
 

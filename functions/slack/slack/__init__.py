@@ -5,23 +5,18 @@ from hashlib import sha256
 from typing import Callable
 
 from flask import Request, Response
-from pydantic import AnyHttpUrl, BaseSettings
+from pydantic import AnyHttpUrl, BaseSettings, Field
 
 FlaskEndpoint = Callable[[Request], Response]
 
 
 class _Settings(BaseSettings):
-    API_VERSION: str = "v0"
-    SIGNING_SECRET: str
-    WEBHOOK: AnyHttpUrl
+    signing: str = Field(..., env="SIGNING_KEY")
+    version: str = Field("v0", env="VERSION")
+    webhook: AnyHttpUrl = Field(..., env="WEBHOOK")
 
-    @property
-    def signing_key(self) -> bytes:
-        return bytes(self.SIGNING_SECRET)
-
-    @property
-    def api_version(self) -> str:
-        return self.API_VERSION
+    class Config:
+        env_prefix = "SLACK"
 
 
 @lru_cache(maxsize=1)
@@ -43,9 +38,9 @@ def SlackRequest(endpoint: FlaskEndpoint) -> FlaskEndpoint:
             timestamp = request.headers.get("X-Slack-Request-Timestamp")
             body = request.body()
             settings = SlackSettings()
-            message = f"{settings.api_version}:{timestamp}:{body}"
+            message = f"{settings.version}:{timestamp}:{body}"
             signature = hmac.new(
-                settings.signing_key,
+                bytes(settings.signing),
                 msg=bytes(message),
                 digestmod=sha256,
             )
