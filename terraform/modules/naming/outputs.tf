@@ -61,11 +61,7 @@ output "run" {
 }
 
 output "secret" {
-  value = "%s"
-}
-
-output "default_secret" {
-  value = "%s-${local.region}"
+  value = "${local.prefix}-sct-%s"
 }
 
 output "sql_instance" {
