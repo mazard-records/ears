@@ -20,8 +20,8 @@ resource "google_compute_url_map" "primary" {
       for_each = var.functions.targets
       
       content {
-        paths   = path_rule.key
-        service = google_compute_backend_service.functions[path_rule.key]
+        paths   = ["/${path_rule.key}"]
+        service = google_compute_backend_service.functions[path_rule.key].id
       }
     }
   }

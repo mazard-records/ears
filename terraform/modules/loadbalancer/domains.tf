@@ -53,6 +53,6 @@ resource "google_compute_global_forwarding_rule" "http_forwarding_rule" {
 
   name       = format(module.naming.global_forwarding_rule, "http${each.key}")
   target     = google_compute_target_http_proxy.http_proxy.id
-  ip_address = each.value
+  ip_address = each.value.address
   port_range = "80"
 }
