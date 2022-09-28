@@ -13,7 +13,7 @@ main:
     - fetch-playlist:
         call: http.get
         args:
-          url: ${deezerAPI + "/playlist/" + deezerPlaylistId}
+          url: ${deezerAPI + "/playlist/" + deezerPlaylistId + "?access_token=" + deezerAccessToken}
         result: deezerPlaylist
     - stop:
         return: ${deezerPlaylist}
