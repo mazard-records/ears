@@ -24,6 +24,12 @@ resource "google_compute_url_map" "primary" {
         service = google_compute_backend_service.functions[path_rule.key].id
       }
     }
+    
+    default_url_redirect {
+      host_redirect          = var.redirect_url
+      redirect_response_code = "PERMANENT_REDIRECT"
+      strip_query            = false
+    }
   }
 
 }
