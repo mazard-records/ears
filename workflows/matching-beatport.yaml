@@ -15,17 +15,17 @@ main:
         args:
           url: ${deezerAPI + "/playlist/" + deezerPlaylistId}
         result: deezerPlaylist
-    - playlist-matching:
-        for:
-          value: track
-          index: i
-          in: deezerPlaylist.tracks
-          steps:
-            - assign-metadata:
-                assign:
-                  - album: track.album.title
-                  - artist: track.artist.name
-                  - title: track.title
+    #- playlist-matching:
+    #    for:
+    #      value: track
+    #      index: i
+    #      in: deezerPlaylist.data.tracks
+    #      steps:
+    #        - assign-metadata:
+    #            assign:
+    #              - album: track.album.title
+    #              - artist: track.artist.name
+    #              - title: track.title
             # - beatport:
             #    call:
             # NOTE: add other provider here.

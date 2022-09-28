@@ -15,6 +15,7 @@ provider "google-beta" {
 
 resource "google_project_service" "apis" {
   for_each = toset([
+    "cloudfunctions",
     "iam",
     "pubsub",
     "secretmanager",
