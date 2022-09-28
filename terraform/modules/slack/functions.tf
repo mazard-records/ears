@@ -21,7 +21,7 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
     version = "latest"
   }
 
-  available_memory_mb   = 64
+  available_memory_mb   = 128
   source_archive_bucket = var.function_bucket_name
   source_archive_object = google_storage_bucket_object.slack.name
   entry_point           = "on_matching_event"
