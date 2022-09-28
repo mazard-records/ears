@@ -57,7 +57,7 @@ class Markdown(Block, Element):
 
 class Context(Block):
     type: ElementType = ElementType.context
-    elements: List[]
+    elements: List[Element]
 
 
 class Section(Block):
