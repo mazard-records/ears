@@ -39,10 +39,6 @@ module "matching" {
   environment = var.environment
 
   function_bucket_name = google_storage_bucket.functions.name
-
-  providers = {
-    aws.instancemaker = aws.west
-  }
 }
 
 module "slack" {
