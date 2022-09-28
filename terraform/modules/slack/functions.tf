@@ -4,13 +4,9 @@ data "archive_file" "slack" {
   output_path = "${path.module}/../../../functions/slack/build.zip"
 }
 
-data "google_storage_bucket" "functions" {
-  name = format(module.naming.storage_bucket, "functions")
-}
-
 resource "google_storage_bucket_object" "slack" {
   name     = format("%s.zip", data.archive_file.slack.output_md5)
-  bucket   = data.google_storage_bucket.functions.name
+  bucket   = var.function_bucket_name
   source   = data.archive_file.slack.output_path
 }
 
@@ -26,7 +22,7 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
   }
 
   available_memory_mb   = 64
-  source_archive_bucket = data.google_storage_bucket.functions.name
+  source_archive_bucket = var.function_bucket_name
   source_archive_object = google_storage_bucket_object.slack.name
   entry_point           = "on_matching_event"
   ingress_settings      = "ALLOW_INTERNAL_ONLY"
@@ -55,7 +51,7 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   }
 
   available_memory_mb   = 128
-  source_archive_bucket = data.google_storage_bucket.functions.name
+  source_archive_bucket = var.function_bucket_name
   source_archive_object = google_storage_bucket_object.slack.name
   entry_point           = "on_interactive_webhook"
   ingress_settings      = "ALLOW_INTERNAL_ONLY"

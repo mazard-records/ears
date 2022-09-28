@@ -30,13 +30,16 @@ resource "google_project_service" "apis" {
 module "matching" {
   source      = "../matching"
   environment = var.environment
+
+  function_bucket_name = google_storage_bucket.functions.name
 }
 
 module "slack" {
   source      = "../slack"
   environment = var.environment
 
-  matching_topics = module.matching.topics
+  function_bucket_name = google_storage_bucket.functions.name
+  matching_topics      = module.matching.topics
 }
 
 locals {

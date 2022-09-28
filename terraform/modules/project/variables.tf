@@ -1,3 +1,9 @@
+variable "cloudstorage_location" {
+  default     = "EU"
+  description = "GCS storage location"
+  type        = string
+}
+
 variable "domain" {
   default     = "mazard-records.fr"
   description = "Root DNS entry for services"
