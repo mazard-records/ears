@@ -1,3 +1,3 @@
-from ._models import MatchingTrack
+from _models import MatchingTrack
 
 __all__ = [MatchingTrack]

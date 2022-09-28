@@ -41,6 +41,10 @@ module "matching" {
   function_bucket_name = google_storage_bucket.functions.name
 }
 
+output "topics" {
+  value = module.matching.topics
+}
+
 module "slack" {
   depends_on = [
     google_project_service.apis

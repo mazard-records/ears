@@ -4,8 +4,8 @@ from flask import Request, Response, jsonify
 from httpx import post
 from pydantic import AnyHttpUrl, BaseSettings
 
-from .blocks import *
-from .providers import MatchingTrack
+from blocks import *
+from providers import MatchingTrack
 
 
 class SlackSettings(BaseSettings):
