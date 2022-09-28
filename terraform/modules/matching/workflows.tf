@@ -1,5 +1,5 @@
 locals {
-  workflows = "${path.module}/../../workflows"
+  workflows = "${path.module}/../../../workflows"
 }
 
 resource "google_workflows_workflow" "matching" {

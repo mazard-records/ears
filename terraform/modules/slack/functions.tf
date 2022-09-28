@@ -1,7 +1,7 @@
 data "archive_file" "slack" {
   type        = "zip"
-  source_dir  = "${path.module}/../../functions/slack"
-  output_path = "${path.module}/../../functions/slack/build.zip"
+  source_dir  = "${path.module}/../../../functions/slack"
+  output_path = "${path.module}/../../../functions/slack/build.zip"
 }
 
 resource "google_storage_bucket_object" "slack" {

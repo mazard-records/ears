@@ -41,8 +41,7 @@ module "matching" {
   function_bucket_name = google_storage_bucket.functions.name
 
   providers = {
-    google = google
-    google-beta = google-beta
+    aws.instancemaker = aws.west
   }
 }
 
@@ -56,11 +55,6 @@ module "slack" {
 
   function_bucket_name = google_storage_bucket.functions.name
   matching_topics      = module.matching.topics
-
-  providers = {
-    google = google
-    google-beta = google-beta
-  }
 }
 
 locals {
@@ -85,10 +79,5 @@ module "loadbalancer" {
     targets = {
       slack = module.slack.function
     }
-  }
-
-  providers = {
-    google = google
-    google-beta = google-beta
-  }
+  } 
 }
