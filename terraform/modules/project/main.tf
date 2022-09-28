@@ -1,6 +1,9 @@
 module "naming" {
   source      = "../naming"
+
+  application = var.application
   environment = var.environment
+  region      = var.region
 }
 
 provider "google" {
@@ -70,7 +73,9 @@ module "loadbalancer" {
   ]
 
   source = "../loadbalancer"
-  environment = var.environment
+
+  environment  = var.environment
+  redirect_url = var.redirect_url
 
   functions   = {
     domains = [

@@ -12,7 +12,6 @@ variable "environment" {
 }
 
 variable "redirect_url" {
-  default     = "www.mazard-records.fr"
   description = "Default URL to redirect when routing fail"
   type        = string
 }
