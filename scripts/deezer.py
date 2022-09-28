@@ -27,6 +27,7 @@ class DeezerAuthServer(Thread):
         secret_id: str,
         queue: Queue,
     ) -> None:
+        super().__init__()
         self._application_id = application_id
         self._secret_id = secret_id
         self._queue = queue
@@ -34,7 +35,7 @@ class DeezerAuthServer(Thread):
     def run(self, *args: Any, **kwargs: Any) -> None:
         api = FastAPI()
 
-        @api.get("/")
+        @api.get("/redirect")
         def _(code: Optional[str]) -> None:
             response = get(
                 f"{DEEZER_CONNECT_TOKEN}"
@@ -46,8 +47,9 @@ class DeezerAuthServer(Thread):
             result = response.json()
             token = result.get("access_token")
             self._queue.put(token)
+            return "You can now close this window"
 
-        config = Config(api, port=8000)
+        config = Config(api, host="localhost", port=8080)
         server = Server(config)
         server.run()
 
@@ -63,9 +65,13 @@ def get_access_token(
     webbrowser.open(
         f"{DEEZER_CONNECT_AUTH}"
         f"?app_id={application_id}"
-        f"&redirect_uri=localhost:8000"
+        f"&redirect_uri=http://localhost:8080/redirect"
         f"&perms=offline_access,email"
     )
     token = queue.get(block=True, timeout=None)
-    print(token)
+    print(f"Access token: {token}")
     exit()
+
+
+if __name__ == "__main__":
+    typer()
