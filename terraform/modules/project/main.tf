@@ -28,6 +28,10 @@ resource "google_project_service" "apis" {
 }
 
 module "matching" {
+  depends_on = [
+    google_project_service.apis
+  ]
+
   source      = "../matching"
   environment = var.environment
 
@@ -35,6 +39,10 @@ module "matching" {
 }
 
 module "slack" {
+  depends_on = [
+    google_project_service.apis
+  ]
+
   source      = "../slack"
   environment = var.environment
 
@@ -50,6 +58,10 @@ locals {
 }
 
 module "loadbalancer" {
+  depends_on = [
+    google_project_service.apis
+  ]
+
   source = "../loadbalancer"
   environment = var.environment
 
