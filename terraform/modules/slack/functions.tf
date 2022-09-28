@@ -38,7 +38,7 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
 
     content {
       event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-      resource   = event_trigger.key     
+      resource   = event_trigger.value     
     }
   }
 }
