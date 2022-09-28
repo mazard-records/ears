@@ -2,6 +2,11 @@ resource "google_compute_url_map" "primary" {
   name        = format(module.naming.url_map, "primary")
   description = "Global URL map for service routing"
 
+  default_url_redirect {
+    host_redirect          = var.redirect_url
+    redirect_response_code = "PERMANENT_REDIRECT"
+  }
+
   host_rule {
     hosts        = var.functions.domains
     path_matcher = "functions"
