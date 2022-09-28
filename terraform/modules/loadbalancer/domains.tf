@@ -44,7 +44,7 @@ resource "google_compute_global_forwarding_rule" "https_forwarding_rule" {
 
   name       = format(module.naming.global_forwarding_rule, "https${each.key}")
   target     = google_compute_target_https_proxy.https.id
-  ip_address = each.value
+  ip_address = each.value.address
   port_range = "443"
 }
 
