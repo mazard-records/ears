@@ -5,6 +5,7 @@ resource "google_compute_url_map" "primary" {
   default_url_redirect {
     host_redirect          = var.redirect_url
     redirect_response_code = "PERMANENT_REDIRECT"
+    strip_query            = false
   }
 
   host_rule {
