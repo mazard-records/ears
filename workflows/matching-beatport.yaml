@@ -26,8 +26,8 @@ main:
                   - album: track.album.title
                   - artist: track.artist.name
                   - title: track.title
-            - beatport:
-                call:
+            # - beatport:
+            #    call:
             # NOTE: add other provider here.
 
   
