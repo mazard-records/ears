@@ -4,6 +4,9 @@ locals {
     deezer = {
       access_token_secret = google_secret_manager_secret.deezer.secret_id
     }
+    beatport = {
+      search = google_cloudfunctions_function.beatport_search.https_trigger_url
+    }
   }
 }
 

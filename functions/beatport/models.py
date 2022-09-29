@@ -1,4 +1,5 @@
 from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -23,3 +24,8 @@ class TrackSearch(BaseModel):
     next: Optional[str]
     previous: Optional[str]
     tracks: List[Track]
+
+
+class SearchQuery(BaseModel):
+    artist: str
+    title: str

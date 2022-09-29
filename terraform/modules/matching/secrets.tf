@@ -6,7 +6,17 @@ resource "google_secret_manager_secret" "deezer" {
   }
 }
 
-resource "google_secret_manager_secret_iam_member" "slack" {
+resource "google_secret_manager_secret" "beatport" {
+  for_each = toset(["username", "password"])
+
+  secret_id = format(module.naming.secret, "beatport-${each.key}")
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_iam_member" "matching" {
   for_each = toset(var.producers)
 
   secret_id = google_secret_manager_secret.deezer.secret_id

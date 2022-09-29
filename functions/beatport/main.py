@@ -2,13 +2,20 @@ from base64 import b64decode
 from json import loads
 from typing import Any, Dict
 
-from pydantic import BaseModel, BaseSettings
+from flask import Request, Response, jsonify
+from pydantic import BaseModel, BaseSettings, Field
 
+from models import SearchQuery
 from transport import BeatportTransport
 
 
-class WantlistSettings(BaseSettings):
-    wantlist: int
+class Settings(BaseSettings):
+    username: str = Field(..., env="USERNAME")
+    password: str = Field(..., env="PASSWORD")
+    wantlist: int = Field(..., env="WANTLIST")
+
+    class Config:
+        env_previx = "BEATPORT_"
 
 
 class WantlistQuery(BaseModel):
@@ -23,18 +30,16 @@ class WantlistQuery(BaseModel):
         return cls(**loads(b64decode(event["data"]).decode("utf-8")))
 
 
-def entrypoint(event: Dict[str, Any], _: Any) -> None:
-    # TODO: add complex error handling.
-    settings = WantlistSettings()
-    query = WantlistQuery.from_event(event)
+def on_search_request(request: Request) -> Response:
     transport = BeatportTransport()
-    transport.login()
-    tracks = transport.search(query.artist, query.name)
-    if len(tracks) == 0:
-        # TODO: notify
-        pass
-    else:
-        transport.add_track_to_playlist(
-            settings.wantlist,
-            [tracks[0].id],
-        )
+    query = SearchQuery(**request.get_json())
+    results = transport.search(query)
+    if len(results.tracks) == 0:
+        return jsonify({})
+    return jsonify(results.tracks[0])
+
+
+def on_wantlist_event(event: Dict[str, Any], _: Any) -> None:
+    settings = Settings()
+    transport = BeatportTransport()
+    transport.login(settings.username, settings.password)
