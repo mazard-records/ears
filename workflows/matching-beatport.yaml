@@ -42,10 +42,16 @@ main:
                 call: http.post
                 args:
                   url: $${beatport.search}
+                  auth:
+                    type: OIDC
                   body:
                     artist: $${title}
                     title: $${artist}
                 result: matching
+            - enforce-result:
+                switch:
+                  - condition: ${matching == null}
+                    next: continue
             - build-message:
                 assign:
                   - message:
@@ -66,5 +72,10 @@ main:
             - update-list:
                 assign:
                   - matchings: $${list.concat(matchings, message)}
+            - continue:
+                call: sys.log
+                args:
+                  text: $${"No match found for " + title + " - " + artist + " on Beatport"}
+                  severity: "WARNING"
     - log-result:
         return: $${matchings}
