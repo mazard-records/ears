@@ -84,7 +84,7 @@ module "loadbalancer" {
       "${local.domain_prefixes[var.environment]}functions.${var.domain}"
     ]
     targets = {
-      slack = module.slack.function
+      slack = module.slack.interactive_webhook_function
     }
   } 
 }
