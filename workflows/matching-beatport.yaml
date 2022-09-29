@@ -45,8 +45,8 @@ main:
                   auth:
                     type: OIDC
                   body:
-                    artist: $${title}
-                    title: $${artist}
+                    artist: $${artist}
+                    title: $${title}
                 result: matching
             - enforce-result:
                 switch:

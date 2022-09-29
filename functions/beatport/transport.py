@@ -70,9 +70,9 @@ class BeatportTransport(object):
 
     def search(self, query: SearchQuery) -> List[TrackSearch]:
         query = (
-            "type=tracks"
-            f"&q={quote(query.title)}"
+            f"q={quote(query.title)}"
             f"&artist_name={quote(query.artist)}"
+            "&type=tracks"
         )
         response = self._transport.get(f"/api/v4/catalog/search?{query}")
         response.raise_for_status()
