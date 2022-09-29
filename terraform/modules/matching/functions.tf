@@ -41,5 +41,11 @@ resource "google_cloudfunctions_function" "beatport_search" {
 resource "google_cloudfunctions_function_iam_member" "beatport_search" {
   cloud_function = google_cloudfunctions_function.beatport_search.name
   role           = "roles/cloudfunctions.invoker"
-  member         = "serviceAccount:${google_service_account.matching["beatport"].email}"
+  member         = "serviceAccount:${google_service_account.matching.beatport.email}"
+}
+
+resource "google_cloudfunctions_function_iam_member" "slack" {
+  cloud_function = var.slack_matching_notification_name
+  role           = "roles/cloudfunctions.invoker"
+  member         = "serviceAccount:${google_service_account.matching.beatport.email}"
 }

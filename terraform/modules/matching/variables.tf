@@ -24,6 +24,11 @@ variable "region" {
   type        = string
 }
 
+variable "slack_matching_notification_name" {
+  description = "Function to send notification to"
+  type        = string
+}
+
 variable "slack_matching_notification_url" {
   description = "URL to send notification to"
   type        = string

@@ -56,8 +56,9 @@ module "matching" {
   environment = var.environment
   region      = var.region
 
-  function_bucket_name            = google_storage_bucket.functions.name
-  slack_matching_notification_url = module.slack.matching_notification_url
+  function_bucket_name             = google_storage_bucket.functions.name
+  slack_matching_notification_name = module.slack.matching_notification_name 
+  slack_matching_notification_url  = module.slack.matching_notification_url
 }
 
 locals {

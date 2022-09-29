@@ -55,6 +55,8 @@ main:
                 call: http.post
                 args:
                   url: ${slack.notification}
+                  auth:
+                    type: OIDC
                   body:
                     origin:
                       identifier: $${identifier}
