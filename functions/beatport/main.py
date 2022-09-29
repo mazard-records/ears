@@ -35,8 +35,8 @@ def on_search_request(request: Request) -> Response:
     query = SearchQuery(**request.get_json())
     results = transport.search(query)
     if len(results.tracks) == 0:
-        return jsonify({})
-    return jsonify(results.tracks[0])
+        return jsonify(None)
+    return jsonify(results.tracks[0].dict())
 
 
 def on_wantlist_event(event: Dict[str, Any], _: Any) -> None:
