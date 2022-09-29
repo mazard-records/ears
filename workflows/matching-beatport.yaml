@@ -5,10 +5,7 @@ main:
         assign:
           - deezer:
               api: "https://api.deezer.com"
-              accessTokenSecret: $${args.deezer.}
-              accessToken: null
               playlistId: $${args.deezer.playlistId}
-              playlist: null
           - beatport:
               api: "https://www.beatport.com/api/v4"
               delay: 10
@@ -17,17 +14,17 @@ main:
         call: googleapis.secretmanager.v1.projects.secrets.versions.accessString
         args:
           secret_id: ${deezer.access_token_secret}
-        result: deezer.accessToken
+        result: accessToken
     - fetch-playlist:
         call: http.get
         args:
-          url: $${deezer.api + "/playlist/" + deezer.playlistId + "?access_token=" + deezer.accessToken}
-        result: deezer.playlist
+          url: $${deezer.api + "/playlist/" + deezer.playlistId + "?access_token=" + accessToken}
+        result: playlist
     - match-playlist:
         for:
           value: track
           index: i
-          in: $${deezer.playlist.body.tracks}
+          in: $${playlist.body.tracks}
           steps:
             - delay-ratelimiting:
                 call: sys.sleep
