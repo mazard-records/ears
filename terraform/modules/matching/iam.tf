@@ -5,3 +5,12 @@ resource "google_service_account" "matching" {
   display_name = "${title(each.key)} matching"
   description  = "Matching compute for ${each.key} provider"
 }
+
+resource "google_project_iam_binding" "matching_log" {
+  for_each = toset(var.producers)
+
+  role    = "roles/logging.logWriter"
+  members = [
+    "serviceAccount:${google_service_account.matching[each.key].email}"
+  ]
+}
