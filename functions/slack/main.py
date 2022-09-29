@@ -46,7 +46,7 @@ def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
             text=Markdown(
                 text=(
                     f"{track.to_markdown_link()}\n"
-                    f"*Release:\n{track.album}*"
+                    f"*Release:\n{track.album}\n*"
                     f"*Provider:\n{track.destination.provider}"
                 )
             ),
