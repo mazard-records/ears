@@ -7,6 +7,7 @@ from slackette import (
     Actions,
     Blocks,
     Button,
+    Divider,
     Image,
     Markdown,
     PlainText,
@@ -40,8 +41,15 @@ def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
     to display the provided matched track entity.
     """
     return Blocks(blocks=[
+        Divider(),
         Section(
-            text=Markdown(text=track.to_markdown_link()),
+            text=Markdown(
+                text=(
+                    f"{track.to_markdown_link()}\n"
+                    f"*Release:\n{track.album}*"
+                    f"*Provider:\n{track.destination.provider}"
+                )
+            ),
             accessory=Image(image_url=track.cover),
         ),
         Actions(

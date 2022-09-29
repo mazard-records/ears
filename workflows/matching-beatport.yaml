@@ -70,7 +70,7 @@ main:
                     album: $${matching.body.release.name}
                     artist: $${matching.body.artists[0].name}
                     title: $${matching.body.name}
-                    cover: $${matching.body.image.uri}
+                    cover: $${matching.body.release.image.uri}
                     preview: $${matching.body.sample_url}
             - log-matching-failure:
                 call: sys.log
