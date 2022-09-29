@@ -57,7 +57,6 @@ module "slack" {
   region      = var.region
 
   function_bucket_name = google_storage_bucket.functions.name
-  matching_topics      = module.matching.topics
 }
 
 locals {

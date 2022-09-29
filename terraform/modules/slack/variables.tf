@@ -13,11 +13,6 @@ variable "function_bucket_name" {
   type        = string
 }
 
-variable "matching_topics" {
-  description = "List of PubSub matching topic name to listen to"
-  type        = list(string)
-}
-
 variable "region" {
   description = "Default region for resources"
   type        = string

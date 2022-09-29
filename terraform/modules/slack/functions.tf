@@ -25,22 +25,14 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
     }
   }
 
-  available_memory_mb   = 128
-  source_archive_bucket = var.function_bucket_name
-  source_archive_object = google_storage_bucket_object.slack.name
-  entry_point           = "on_matching_event"
-  ingress_settings      = "ALLOW_INTERNAL_ONLY"
-  service_account_email = google_service_account.slack.email
-  trigger_http          = null
- 
-  dynamic "event_trigger" {
-    for_each = var.matching_topics
-
-    content {
-      event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-      resource   = event_trigger.value     
-    }
-  }
+  available_memory_mb          = 128
+  source_archive_bucket        = var.function_bucket_name
+  source_archive_object        = google_storage_bucket_object.slack.name
+  entry_point                  = "on_matching_event"
+  ingress_settings             = "ALLOW_INTERNAL_ONLY"
+  service_account_email        = google_service_account.slack.email
+  trigger_http                 = true
+  https_trigger_security_level = "SECURE_ALWAYS"
 }
 
 resource "google_cloudfunctions_function" "slack_interactive_webhook" {
