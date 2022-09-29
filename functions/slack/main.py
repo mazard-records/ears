@@ -30,7 +30,7 @@ class _Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def Settings() -> _Settings:
-    return Settings()
+    return _Settings()
 
 
 def signing_secret_provider() -> str:
