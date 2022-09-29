@@ -24,7 +24,7 @@ main:
         for:
           value: track
           index: i
-          in: $${playlist.body.tracks}
+          in: $${playlist.body.tracks.data}
           steps:
             - delay-ratelimiting:
                 call: sys.sleep
