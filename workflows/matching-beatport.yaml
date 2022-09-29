@@ -41,8 +41,8 @@ main:
                 call: http.get
                 args:
                   url: $${beatport.api + "/catalog/search?type=tracks&q=" + text.url_encode(title) + "&artist_name=" + text.url_encode(artist)}
-                headers:
-                  "Content-Type": "application/json"
+                  headers:
+                    "Content-Type": "application/json"
                 result: items
             # TODO: add empty search result check
             - pop-first:
