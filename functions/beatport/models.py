@@ -30,6 +30,7 @@ class Track(Named):
     mix_name: str
     release: Release
     sample_url: AnyHttpUrl
+    slug: str
 
 
 class TrackSearch(BaseModel):
