@@ -10,7 +10,6 @@ main:
               api: "https://www.beatport.com/api/v4"
               search: ${beatport.search}
               delay: 10
-          - matchings: []
     - fetch-access-token:
         call: googleapis.secretmanager.v1.projects.secrets.versions.accessString
         args:
@@ -52,30 +51,27 @@ main:
                 switch:
                   - condition: $${matching.body == null}
                     next: log-matching-failure
-            - build-message:
-                assign:
-                  - message:
-                      origin:
-                        identifier: $${identifier}
-                        provider: "deezer"
-                        url: $${url}
-                      destination:
-                        identifier: $${matching.body.id}
-                        provider: "beatport"
-                        # NOTE: API doesn't provide resource url so we build it.
-                        url: $${"https://www.beatport.com/track/" + matching.body.slug + "/" + string(matching.body.id)}
-                      album: $${matching.body.release.name}
-                      artist: $${matching.body.artists[0].name}
-                      title: $${matching.body.name}
-                      cover: $${matching.body.image.uri}
-                      preview: $${matching.body.sample_url}
-            - update-list:
-                assign:
-                  - matchings: $${list.concat(matchings, message)}
+            - send-notification:
+                call: http.post
+                args:
+                  url: ${slack.notification}
+                  body:
+                    origin:
+                      identifier: $${identifier}
+                      provider: "deezer"
+                      url: $${url}
+                    destination:
+                      identifier: $${matching.body.id}
+                      provider: "beatport"
+                      # NOTE: API doesn't provide resource url so we build it.
+                      url: $${"https://www.beatport.com/track/" + matching.body.slug + "/" + string(matching.body.id)}
+                    album: $${matching.body.release.name}
+                    artist: $${matching.body.artists[0].name}
+                    title: $${matching.body.name}
+                    cover: $${matching.body.image.uri}
+                    preview: $${matching.body.sample_url}
             - log-matching-failure:
                 call: sys.log
                 args:
                   text: $${"No match found for " + title + " - " + artist + " on Beatport"}
                   severity: "WARNING"
-    - log-result:
-        return: $${matchings}

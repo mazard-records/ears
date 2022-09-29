@@ -64,15 +64,16 @@ def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
     ])
 
 
-def on_matching_event(event: Dict[str, Any], _: Any) -> None:
+def on_matching_event(request: Request) -> Response:
     """
-    PubSub entrypoint that publishes a Slack interactive
+    HTTP endpoint that publishes a Slack interactive
     notification when a track matching is received.
     """
-    track = MatchingTrack.from_event(event)
+    track = MatchingTrack(**request.json())
     notification = MatchingTrackNotification(track)
     webhook = SlackWebhook(Settings().webhook)
     webhook(notification)
+    return jsonify(None)
 
 
 @SignedSlackRoute(signing_secret=signing_secret_provider)

@@ -23,3 +23,8 @@ variable "region" {
   description = "Default region for resources"
   type        = string
 }
+
+variable "slack_matching_notification_url" {
+  description = "URL to send notification to"
+  type        = string
+}

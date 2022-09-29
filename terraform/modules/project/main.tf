@@ -33,19 +33,6 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
-module "matching" {
-  depends_on = [
-    google_project_service.apis
-  ]
-
-  source      = "../matching"
-  application = var.application
-  environment = var.environment
-  region      = var.region
-
-  function_bucket_name = google_storage_bucket.functions.name
-}
-
 module "slack" {
   depends_on = [
     google_project_service.apis
@@ -57,6 +44,20 @@ module "slack" {
   region      = var.region
 
   function_bucket_name = google_storage_bucket.functions.name
+}
+
+module "matching" {
+  depends_on = [
+    google_project_service.apis
+  ]
+
+  source      = "../matching"
+  application = var.application
+  environment = var.environment
+  region      = var.region
+
+  function_bucket_name            = google_storage_bucket.functions.name
+  slack_matching_notification_url = module.slack.matching_notification_url
 }
 
 locals {

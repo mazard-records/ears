@@ -29,12 +29,6 @@ class MatchingTrack(BaseModel):
     cover: AnyHttpUrl
     preview: Optional[AnyHttpUrl]
 
-    @classmethod
-    def from_event(cls, event: Dict[str, Any]) -> "MatchingTrack":
-        if "data" not in event:
-            raise ValueError("Missing matching event data")
-        return cls(**json.loads(b64decode(event["data"]).decode("utf-8")))
-
     def to_markdown_link(self) -> str:
         return f"*<{self.destination.url}|{self.title} - {self.artist}>*"
 
