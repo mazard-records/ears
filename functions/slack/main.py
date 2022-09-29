@@ -69,7 +69,7 @@ def on_matching_event(request: Request) -> Response:
     HTTP endpoint that publishes a Slack interactive
     notification when a track matching is received.
     """
-    track = MatchingTrack(**request.json())
+    track = MatchingTrack(**request.get_json())
     notification = MatchingTrackNotification(track)
     webhook = SlackWebhook(Settings().webhook)
     webhook(notification)
