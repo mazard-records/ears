@@ -57,7 +57,7 @@ main:
                         identifier: $${item.id}
                         provider: "beatport"
                         # NOTE: API doesn't provide resource url so we build it.
-                        url: $${"https://www.beatport.com/track/" + item.slug + "/" + string(item.id}}
+                        url: $${"https://www.beatport.com/track/" + item.slug + "/" + string(item.id)}
                       album: $${item.release.name}
                       artist: $${item.artists[0].name}
                       title: $${item.name}
