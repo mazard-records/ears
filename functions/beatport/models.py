@@ -1,20 +1,35 @@
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import AnyHttpUrl, BaseModel
 
 
-class Artist(BaseModel):
+class Identifiable(BaseModel):
     id: int
+
+
+class Named(Identifiable):
     name: str
+
+
+class Artist(Named):
     slug: str
     url: str
 
 
-class Track(BaseModel):
+class Image(Identifiable):
+    uri: AnyHttpUrl
+
+
+class Release(Named):
+    image: Image
+
+
+class Track(Named):
     artists: List[Artist]
-    id: int
-    name: str
+    image: Image
     mix_name: str
+    release: Release
+    sample_url: AnyHttpUrl
 
 
 class TrackSearch(BaseModel):
