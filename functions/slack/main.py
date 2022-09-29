@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Any, Dict
 
 from flask import Request, Response, jsonify
@@ -14,10 +15,11 @@ from slackette import (
     SlackWebhook,
     Style
 )
+
 from providers import MatchingTrack
 
 
-class Settings(BaseSettings):
+class _Settings(BaseSettings):
     signing: str = Field(..., env="SIGNING_KEY")
     version: str = Field("v0", env="VERSION")
     webhook: AnyHttpUrl = Field(..., env="WEBHOOK")
@@ -26,7 +28,13 @@ class Settings(BaseSettings):
         env_prefix = "SLACK"
 
 
-settings = Settings()
+@lru_cache(maxsize=1)
+def Settings() -> _Settings:
+    return Settings()
+
+
+def signing_secret_provider() -> str:
+    return Settings().signing
 
 
 def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
@@ -63,11 +71,11 @@ def on_matching_event(event: Dict[str, Any], _: Any) -> None:
     """
     track = MatchingTrack.from_event(event)
     notification = MatchingTrackNotification(track)
-    webhook = SlackWebhook(settings.webhook)
+    webhook = SlackWebhook(Settings().webhook)
     webhook(notification)
 
 
-@SignedSlackRoute(signing_secret=settings.signing)
+@SignedSlackRoute(signing_secret=signing_secret_provider)
 def on_interactive_webhook(request: Request) -> Response:
     """
     HTTP endpoint that acknowledge user feedback from Slack.

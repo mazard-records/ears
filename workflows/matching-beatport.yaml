@@ -3,31 +3,71 @@ main:
   steps:
     - setup:
         assign:
-          - deezerPlaylistId: ${args.playlistId}
-          - deezerAPI: "https://api.deezer.com"
+          - deezer:
+              api: "https://api.deezer.com"
+              accessTokenSecret: $${args.deezer.}
+              accessToken: null
+              playlistId: $${args.deezer.playlistId}
+              playlist: null
+          - beatport:
+              api: "https://www.beatport.com/api/v4"
+              delay: 10
+          - matchings: []
     - fetch-access-token:
         call: googleapis.secretmanager.v1.projects.secrets.versions.accessString
         args:
-          secret_id: ${args.accessTokenSecret}
-        result: deezerAccessToken
+          secret_id: ${deezerAccessTokenSecret}
+        result: deezer.accessToken
     - fetch-playlist:
         call: http.get
         args:
-          url: ${deezerAPI + "/playlist/" + deezerPlaylistId + "?access_token=" + deezerAccessToken}
-        result: deezerPlaylist
-    #- playlist-matching:
-    #    for:
-    #      value: track
-    #      index: i
-    #      in: ${deezerPlaylist.body.tracks}
-    #      steps:
-    #        - assign-metadata:
-    #            assign:
-    #              - album: track.album.title
-    #              - artist: track.artist.name
-    #              - title: track.title
-            # - beatport:
-            #    call:
-            # NOTE: add other provider here.
-
-  
+          url: $${deezer.api + "/playlist/" + deezer.playlistId + "?access_token=" + deezer.accessToken}
+        result: deezer.playlist
+    - match-playlist:
+        for:
+          value: track
+          index: i
+          in: $${deezer.playlist.body.tracks}
+          steps:
+            - delay-ratelimiting:
+                call: sys.sleep
+                args:
+                  seconds: $${beatport.delay}
+            - assign-metadata:
+                assign:
+                  - album: $${track.album.title}
+                  - artist: $${track.artist.name}
+                  - identifier: $${track.id}
+                  - title: $${track.title}
+                  - url: $${track.link}
+            - search-beatport:
+                call: http.get
+                args:
+                  url: $${beatport.api + "/catalog/search?type=tracks&q=" + text.url_encode(title) + "&artist_name=" + text.url_encode(artist)}
+                result: items
+            # TODO: add empty search result check
+            - pop-first:
+                assign:
+                  - item: items.body.tracks[0]
+            - build-message:
+                assign:
+                  - message:
+                      origin:
+                        identifier: $${identifier}
+                        provider: "deezer"
+                        url: $${url}
+                      destination:
+                        identifier: $${item.id}
+                        provider: "beatport"
+                        # NOTE: API doesn't provide resource url so we build it.
+                        url: $${"https://www.beatport.com/track/" + item.slug + "/" + string(item.id}}
+                      album: $${item.release.name}
+                      artist: $${item.artists[0].name}
+                      title: $${item.name}
+                      cover: $${item.image.uri}
+                      preview: $${item.sample_url}
+            - update-list:
+                assign:
+                  - matchings: $${list.concat(matchings, message)}
+    - log-result:
+        return: $${matchings}

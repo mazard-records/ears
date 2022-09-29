@@ -2,7 +2,7 @@ import json
 
 from base64 import b64decode
 from enum import Enum
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pydantic import AnyHttpUrl, BaseModel
 
@@ -23,11 +23,11 @@ class MatchingSource(BaseModel):
 class MatchingTrack(BaseModel):
     origin: MatchingSource
     destination: MatchingSource
-    provider: Provider
     album: str
     artist: str
     title: str
     cover: AnyHttpUrl
+    preview: Optional[AnyHttpUrl]
 
     @classmethod
     def from_event(cls, event: Dict[str, Any]) -> "MatchingTrack":
