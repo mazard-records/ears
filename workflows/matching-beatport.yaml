@@ -50,7 +50,7 @@ main:
                 result: matching
             - enforce-result:
                 switch:
-                  - condition: ${matching == null}
+                  - condition: $${matching == null}
                     next: continue
             - build-message:
                 assign:
