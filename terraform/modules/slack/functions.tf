@@ -59,3 +59,9 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   trigger_http                 = true
   https_trigger_security_level = "SECURE_ALWAYS"
 }
+
+resource "google_cloudfunctions_function_iam_member" "slack_interactive_webhook" {
+  cloud_function = google_cloudfunctions_function.slack_interactive_webhook.name
+  role           = "roles/cloudfunctions.invoker"
+  member         = "allUsers"
+}
