@@ -16,7 +16,7 @@ main:
     - fetch-access-token:
         call: googleapis.secretmanager.v1.projects.secrets.versions.accessString
         args:
-          secret_id: ${deezerAccessTokenSecret}
+          secret_id: ${deezer.access_token_secret}
         result: deezer.accessToken
     - fetch-playlist:
         call: http.get
