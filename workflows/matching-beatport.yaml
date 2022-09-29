@@ -39,7 +39,7 @@ main:
                   - title: $${track.title}
                   - url: $${track.link}
             - search-beatport:
-                call: http.get
+                call: http.post
                 args:
                   url: $${beatport.search}
                   body:
@@ -54,15 +54,15 @@ main:
                         provider: "deezer"
                         url: $${url}
                       destination:
-                        identifier: $${item.id}
+                        identifier: $${matching.body.id}
                         provider: "beatport"
                         # NOTE: API doesn't provide resource url so we build it.
-                        url: $${"https://www.beatport.com/track/" + item.slug + "/" + string(item.id)}
-                      album: $${item.release.name}
-                      artist: $${item.artists[0].name}
-                      title: $${item.name}
-                      cover: $${item.image.uri}
-                      preview: $${item.sample_url}
+                        url: $${"https://www.beatport.com/track/" + matching.body.slug + "/" + string(matching.body.id)}
+                      album: $${matching.body.release.name}
+                      artist: $${matching.body.artists[0].name}
+                      title: $${matching.body.name}
+                      cover: $${matching.body.image.uri}
+                      preview: $${matching.body.sample_url}
             - update-list:
                 assign:
                   - matchings: $${list.concat(matchings, message)}
