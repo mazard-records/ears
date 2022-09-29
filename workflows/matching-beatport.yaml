@@ -51,7 +51,7 @@ main:
             - enforce-result:
                 switch:
                   - condition: $${matching == null}
-                    next: continue
+                    next: log-matching-failure
             - build-message:
                 assign:
                   - message:
@@ -72,7 +72,7 @@ main:
             - update-list:
                 assign:
                   - matchings: $${list.concat(matchings, message)}
-            - continue:
+            - log-matching-failure:
                 call: sys.log
                 args:
                   text: $${"No match found for " + title + " - " + artist + " on Beatport"}
