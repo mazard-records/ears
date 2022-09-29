@@ -15,13 +15,11 @@ main:
         args:
           url: ${deezerAPI + "/playlist/" + deezerPlaylistId + "?access_token=" + deezerAccessToken}
         result: deezerPlaylist
-    - stop:
-        return: ${deezerPlaylist}
     #- playlist-matching:
     #    for:
     #      value: track
     #      index: i
-    #      in: deezerPlaylist.data.tracks
+    #      in: ${deezerPlaylist.body.tracks}
     #      steps:
     #        - assign-metadata:
     #            assign:

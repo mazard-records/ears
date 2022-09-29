@@ -1,11 +1,32 @@
 from typing import Any, Dict
 
 from flask import Request, Response, jsonify
-from httpx import post
-
-from slack import SlackRequest, SlackSettings
-from slack.blocks import *
+from pydantic import AnyHttpUrl, BaseSettings, Field
+from slackette import (
+    Actions,
+    Blocks,
+    Button,
+    Image,
+    Markdown,
+    PlainText,
+    Section,
+    SignedSlackRoute,
+    SlackWebhook,
+    Style
+)
 from providers import MatchingTrack
+
+
+class Settings(BaseSettings):
+    signing: str = Field(..., env="SIGNING_KEY")
+    version: str = Field("v0", env="VERSION")
+    webhook: AnyHttpUrl = Field(..., env="WEBHOOK")
+
+    class Config:
+        env_prefix = "SLACK"
+
+
+settings = Settings()
 
 
 def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
@@ -40,15 +61,13 @@ def on_matching_event(event: Dict[str, Any], _: Any) -> None:
     PubSub entrypoint that publishes a Slack interactive
     notification when a track matching is received.
     """
-    settings = SlackSettings()
     track = MatchingTrack.from_event(event)
     notification = MatchingTrackNotification(track)
-    response = post(settings.webhook, json=notification.dict())
-    # TODO: error handling with CloudLogging.
-    response.raise_for_status()
+    webhook = SlackWebhook(settings.webhook)
+    webhook(notification)
 
 
-@SlackRequest
+@SignedSlackRoute(signing_secret=settings.signing)
 def on_interactive_webhook(request: Request) -> Response:
     """
     HTTP endpoint that acknowledge user feedback from Slack.
