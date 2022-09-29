@@ -20,12 +20,9 @@ from providers import MatchingTrack
 
 
 class _Settings(BaseSettings):
-    signing: str = Field(..., env="SIGNING_KEY")
-    version: str = Field("v0", env="VERSION")
-    webhook: AnyHttpUrl = Field(..., env="WEBHOOK")
-
-    class Config:
-        env_prefix = "SLACK"
+    signing: str = Field(..., env="SLACK_SIGNING_KEY")
+    version: str = Field("v0", env="SLACK_VERSION")
+    webhook: AnyHttpUrl = Field(..., env="SLACK_WEBHOOK")
 
 
 @lru_cache(maxsize=1)
