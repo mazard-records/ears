@@ -16,10 +16,18 @@ resource "google_secret_manager_secret" "beatport" {
   }
 }
 
-resource "google_secret_manager_secret_iam_member" "matching" {
+resource "google_secret_manager_secret_iam_member" "deezer" {
   for_each = toset(var.producers)
 
   secret_id = google_secret_manager_secret.deezer.secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.matching[each.key].email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "beatport" {
+  for_each = toset(["username", "password"])
+
+  secret_id = google_secret_manager_secret.beatport[each.key].secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.matching["beatport"].email}"
 }
