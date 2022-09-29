@@ -1,5 +1,5 @@
 from typing import List
-from urllib.parse import urlencode
+from urllib.parse import quote
 
 from httpx import Client
 from pydantic import BaseSettings
@@ -71,8 +71,8 @@ class BeatportTransport(object):
     def search(self, query: SearchQuery) -> List[TrackSearch]:
         query = (
             "type=tracks"
-            f"&q={urlencode(query.title)}"
-            f"&artist_name={urlencode(query.artist)}"
+            f"&q={quote(query.title)}"
+            f"&artist_name={quote(query.artist)}"
         )
         response = self._transport.get(f"/api/v4/catalog/search?{query}")
         response.raise_for_status()
