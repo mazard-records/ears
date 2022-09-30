@@ -6,7 +6,22 @@ from hmac import new as hmac
 from time import time
 from typing import Any, Callable, Union, cast
 
-from .types import Endpoint, RequestProtocol, StringProvider
+from typing import Mapping, Protocol
+
+
+class RequestProtocol(Protocol):
+    """A headers provider interface for duck typing."""
+
+    @property
+    def headers(self) -> Mapping[str, Any]:
+        ...
+
+    def get_data(self) -> str:
+        ...
+
+
+Endpoint = Callable[[RequestProtocol], Any]
+StringProvider = Callable[..., str]
 
 
 class SlackHeaders(object):

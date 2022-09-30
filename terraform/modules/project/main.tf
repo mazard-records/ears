@@ -68,24 +68,25 @@ locals {
   }
 }
 
-module "loadbalancer" {
-  depends_on = [
-    google_project_service.apis
-  ]
+# NOTE: we don't it really for now so to prevent from useless cost
+# module "loadbalancer" {
+#  depends_on = [
+#    google_project_service.apis
+#  ]
 
-  source = "../loadbalancer"
+#  source = "../loadbalancer"
 
-  application = var.application
-  environment = var.environment
-  redirect_url = var.redirect_url
-  region      = var.region
+#  application = var.application
+#  environment = var.environment
+#  redirect_url = var.redirect_url
+#  region      = var.region
 
-  functions   = {
-    domains = [
-      "${local.domain_prefixes[var.environment]}functions.${var.domain}"
-    ]
-    targets = {
-      slack = module.slack.interactive_webhook_function
-    }
-  } 
-}
+#  functions   = {
+#    domains = [
+#      "${local.domain_prefixes[var.environment]}functions.${var.domain}"
+#    ]
+#    targets = {
+#      slack = module.slack.interactive_webhook_function
+#    }
+#  } 
+#}
