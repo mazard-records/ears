@@ -2,7 +2,7 @@ import json
 import logging
 
 from functools import lru_cache
-from typing import Callable
+from typing import Callable, Optional
 from urllib.parse import urlparse
 
 from flask import Request, Response, jsonify
@@ -26,7 +26,7 @@ client = LoggingClient()
 client.setup_logging(log_level=logging.DEBUG)
 
 
-class _Settings(BaseSettings):
+class _SlackSettings(BaseSettings):
     signing: str = Field(..., env="SLACK_SIGNING_KEY")
     version: str = Field("v0", env="SLACK_VERSION")
     webhook: AnyHttpUrl = Field(..., env="SLACK_WEBHOOK")
@@ -41,7 +41,7 @@ class _InteractionRouter(object):
     def add_domain_handler(
         self,
         domain: str,
-        handler: Callable[[str], str],
+        handler: Callable[[str], Optional[str]],
     ) -> None:
         self._domain_handlers[domain] = handler
 
@@ -52,7 +52,7 @@ class _InteractionRouter(object):
                 raise ValueError(f"Invalid url scheme {url.scheme}")
             if url.netloc not in self._domain_handlers:
                 raise ValueError(f"Invalid domain {url.scheme}")
-            _ = self._domain_handlers[url.netloc](url.path)
+            self._domain_handlers[url.netloc](url.path)
             response = post(
                 interaction.response_url,
                 json=InteractionDeleteResponse().dict(),
@@ -61,8 +61,8 @@ class _InteractionRouter(object):
 
 
 @lru_cache(maxsize=1)
-def Settings() -> _Settings:
-    return _Settings()
+def SlackSettings() -> _SlackSettings:
+    return _SlackSettings()
 
 
 @lru_cache(maxsize=1)
@@ -73,7 +73,7 @@ def InteractionRouter() -> None:
 
 
 def signing_secret_provider() -> str:
-    return Settings().signing
+    return SlackSettings().signing
 
 
 def on_matching_event(request: Request) -> Response:
@@ -83,7 +83,7 @@ def on_matching_event(request: Request) -> Response:
     """
     track = MatchingTrack(**request.get_json())
     notification = MatchingTrackNotification(track)
-    webhook = SlackWebhook(Settings().webhook)
+    webhook = SlackWebhook(SlackSettings().webhook)
     webhook(notification)
     return jsonify(None)
 

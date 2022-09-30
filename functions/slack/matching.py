@@ -1,7 +1,8 @@
+import json
 import logging
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from pydantic import AnyHttpUrl, BaseModel
 from slackette import (
@@ -90,7 +91,11 @@ def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
     ])
 
 
-def on_matching_action(url: str) -> str:
+def on_matching_action(url: str) -> Optional[str]:
+    """
+    Domain handler for InteractionRouter which acknowledge matching
+    action and publish a message into a Pub/Sub topic accordingly.
+    """
     tokens = url.split("/")
     # NOTE: url start with / so we have an empty token.
     if len(tokens) != 4:
@@ -98,17 +103,23 @@ def on_matching_action(url: str) -> str:
     action = tokens[1]
     origin = MatchingSource.from_urn(tokens[2])
     destination = MatchingSource.from_urn(tokens[3])
+    producer = MessageProducer(destination.provider)
     if action == "validate":
-        logging.debug(
-            f"Validate matching {origin.provider}#{origin.identifier}"
-            f" -> {destination.provider}#{destination.identifier}"
-        )
-        return "Matching validated"
+        producer({"id": destination.identifier})
     elif action == "invalidate":
         logging.debug(
             f"Deny matching {origin.provider}#{origin.identifier}"
             f" -> {destination.provider}#{destination.identifier}"
         )
-        return "Matching denied"
     else:
         raise ValueError("Invalid action")
+
+
+
+publisher = PublisherClient()
+topic_name = 'projects/{project_id}/topics/{topic}'.format(
+    project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
+    topic='MY_TOPIC_NAME',  # Set this to something appropriate.
+)
+future = publisher.publish(topic_name, b'My first message!', spam='eggs')
+future.result()

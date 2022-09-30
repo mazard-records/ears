@@ -40,6 +40,10 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   description = "Slack webhook for receiving interactive user feedback"
   runtime     = "python39"
 
+  environment_variables = {
+    PUBLISHER_PREFIX = format(module.naming.pubsub_topic, "")
+  }
+
   dynamic "secret_environment_variables" {
     for_each = google_secret_manager_secret.slack
 

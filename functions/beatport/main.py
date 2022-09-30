@@ -1,15 +1,16 @@
 from base64 import b64decode
+from functools import lru_cache
 from json import loads
 from typing import Any, Dict
 
 from flask import Request, Response, jsonify
-from pydantic import BaseModel, BaseSettings, Field
+from pydantic import BaseModel, BaseSettings, Field, validator
 
 from models import SearchQuery
 from transport import BeatportTransport
 
 
-class Settings(BaseSettings):
+class _Settings(BaseSettings):
     username: str = Field(..., env="USERNAME")
     password: str = Field(..., env="PASSWORD")
     wantlist: int = Field(..., env="WANTLIST")
@@ -18,10 +19,25 @@ class Settings(BaseSettings):
         env_previx = "BEATPORT_"
 
 
+@lru_cache(maxsize=1)
+def Settings() -> _Settings:
+    return _Settings()
+
+
+@lru_cache(maxsize=1)
+def AuthenticatedTransport() -> BeatportTransport:
+    settings = Settings()
+    transport = BeatportTransport()
+    transport.login(settings.username, settings.password)
+    return transport
+
+
 class WantlistQuery(BaseModel):
-    artist: str
-    album: str
-    name: str
+    id: int
+
+    @validator("id", pre=True)
+    def validate_id(cls, value: Any) -> int
+        return int(value)
 
     @classmethod
     def from_event(cls, event: Dict[str, Any]) -> "WantlistQuery":
@@ -41,5 +57,9 @@ def on_search_request(request: Request) -> Response:
 
 def on_wantlist_event(event: Dict[str, Any], _: Any) -> None:
     settings = Settings()
-    transport = BeatportTransport()
-    transport.login(settings.username, settings.password)
+    query = WantlistQuery.from_event(event)
+    transport = AuthenticatedTransport()
+    transport.add_track_to_playlist(
+        settings.wantlist,
+        tracks=[query.id],
+    )

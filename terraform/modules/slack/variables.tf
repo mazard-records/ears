@@ -17,3 +17,8 @@ variable "region" {
   description = "Default region for resources"
   type        = string
 }
+
+variable "matching_topics" {
+  description = "List of topic to publish message to"
+  type        = list(string)
+}

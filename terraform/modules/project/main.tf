@@ -33,19 +33,6 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
-module "slack" {
-  depends_on = [
-    google_project_service.apis
-  ]
-
-  source      = "../slack"
-  application = var.application
-  environment = var.environment
-  region      = var.region
-
-  function_bucket_name = google_storage_bucket.functions.name
-}
-
 module "matching" {
   depends_on = [
     google_project_service.apis
@@ -66,6 +53,20 @@ locals {
     development = "dev-"
     production  = ""
   }
+}
+
+module "slack" {
+  depends_on = [
+    google_project_service.apis
+  ]
+
+  source      = "../slack"
+  application = var.application
+  environment = var.environment
+  region      = var.region
+
+  function_bucket_name = google_storage_bucket.functions.name
+  matching_topics = module.matching.matching_topics
 }
 
 # NOTE: we don't it really for now so to prevent from useless cost

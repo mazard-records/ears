@@ -1,0 +1,34 @@
+import json
+
+from functools import lru_cache
+from typing import Any, Dict
+
+from google.cloud.pubsub_v1 import PublisherClient as _PublisherClient
+from pydantic import BaseSettings, Field
+
+
+class _PublisherSettings(BaseSettings):
+    prefix: str = Field(..., env="PUBLISHER_PREFIX")
+
+
+@lru_cache(maxsize=1)
+def PublisherSettings() -> _PublisherSettings:
+    return _PublisherSettings()
+
+
+@lru_cache(maxsize=1)
+def PublisherClient() -> _PublisherClient:
+    return _PublisherClient()
+
+
+@lru_cache(maxsize=10)
+def MessageProducer(provider: str) -> PublisherClient:
+    client = PublisherClient()
+    settings = PublisherSettings()
+    topic = f"{settings.prefix}{provider}"
+
+    def publish(message: Dict[str, Any]) -> None:
+        future = client.publish(topic, json.dumps(message).encode("utf-8"))
+        future.result()
+
+    return publish
