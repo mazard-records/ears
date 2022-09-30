@@ -92,11 +92,12 @@ def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
 
 def on_matching_action(url: str) -> str:
     tokens = url.split("/")
-    if len(tokens) != 3:
+    # NOTE: url start with / so we have an empty token.
+    if len(tokens) != 4:
         raise ValueError("Invalid matching URL")
-    action = tokens[0]
-    origin = MatchingSource.from_urn(tokens[1])
-    destination = MatchingSource.from_urn(tokens[2])
+    action = tokens[1]
+    origin = MatchingSource.from_urn(tokens[2])
+    destination = MatchingSource.from_urn(tokens[3])
     if action == "validate":
         logging.debug(
             f"Validate matching {origin.provider}#{origin.identifier}"
