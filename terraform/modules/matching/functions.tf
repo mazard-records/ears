@@ -34,7 +34,6 @@ resource "google_cloudfunctions_function" "beatport_search" {
   trigger_http                 = true
   https_trigger_security_level = "SECURE_ALWAYS"
 
-  min_instances = 1
   max_instances = 1
 }
 

@@ -33,6 +33,8 @@ resource "google_cloudfunctions_function" "slack_matching_notification" {
   service_account_email        = google_service_account.slack.email
   trigger_http                 = true
   https_trigger_security_level = "SECURE_ALWAYS"
+
+  max_instances = 1
 }
 
 resource "google_cloudfunctions_function" "slack_interactive_webhook" {
@@ -61,6 +63,8 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   service_account_email        = google_service_account.slack.email
   trigger_http                 = true
   https_trigger_security_level = "SECURE_ALWAYS"
+
+  max_instances = 1
 }
 
 resource "google_cloudfunctions_function_iam_member" "slack_interactive_webhook" {
