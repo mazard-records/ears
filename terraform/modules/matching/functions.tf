@@ -51,7 +51,7 @@ resource "google_cloudfunctions_function_iam_member" "slack" {
 }
 
 resource "google_cloudfunctions_function" "beatport_matching" {
-  name        = format(module.naming.function, "beatport-matchig")
+  name        = format(module.naming.function, "beatport-matching")
   description = "Add matched track on Beatport"
   runtime     = "python39"
 

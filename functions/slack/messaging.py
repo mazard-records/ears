@@ -1,10 +1,13 @@
 import json
 
 from functools import lru_cache
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 from google.cloud.pubsub_v1 import PublisherClient as _PublisherClient
 from pydantic import BaseSettings, Field
+
+
+Producer = Callable[[Dict[str, Any]], None]
 
 
 class _PublisherSettings(BaseSettings):
@@ -22,7 +25,7 @@ def PublisherClient() -> _PublisherClient:
 
 
 @lru_cache(maxsize=10)
-def MessageProducer(provider: str) -> PublisherClient:
+def MessageProducer(provider: str) -> Producer:
     client = PublisherClient()
     settings = PublisherSettings()
     topic = f"{settings.prefix}{provider}"

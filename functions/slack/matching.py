@@ -17,6 +17,9 @@ from slackette import (
     Style,
 )
 
+from messaging import MessageProducer
+
+
 class Provider(str, Enum):
     beatport = "beatport"
 
@@ -113,13 +116,3 @@ def on_matching_action(url: str) -> Optional[str]:
         )
     else:
         raise ValueError("Invalid action")
-
-
-
-publisher = PublisherClient()
-topic_name = 'projects/{project_id}/topics/{topic}'.format(
-    project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
-    topic='MY_TOPIC_NAME',  # Set this to something appropriate.
-)
-future = publisher.publish(topic_name, b'My first message!', spam='eggs')
-future.result()
