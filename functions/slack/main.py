@@ -2,7 +2,6 @@ from functools import lru_cache
 from typing import Any, Dict
 
 from flask import Request, Response, jsonify
-from google.cloud.logging import Client as LoggingClient
 from pydantic import AnyHttpUrl, BaseSettings, Field
 from slackette import (
     Actions,
@@ -21,8 +20,6 @@ from slackette import (
 from providers import MatchingTrack
 from utils import SignedSlackRoute
 
-client = LoggingClient()
-client.setup_logging()
 
 
 class _Settings(BaseSettings):

@@ -5,8 +5,12 @@ from hashlib import sha256
 from hmac import new as hmac
 from time import time
 from typing import Any, Callable, Union, cast
-
 from typing import Mapping, Protocol
+
+from google.cloud.logging import Client as LoggingClient
+
+client = LoggingClient()
+client.setup_logging(log_level=logging.DEBUG)
 
 
 class RequestProtocol(Protocol):
@@ -48,8 +52,8 @@ def compute_slack_signature(
         raise ExpiredTimestampError()
     body = request.get_data()
     message = f"{version}:{timestamp}:{body}"
-    logging.debug(f"slackette.compute_slack_signature: body {body}")
-    logging.debug(f"slackette.compute_slack_signature: message {message}")
+    logging.warning(f"slackette.compute_slack_signature: body {body}")
+    logging.warning(f"slackette.compute_slack_signature: message {message}")
     signature = hmac(
         signing_secret.encode("utf-8"),
         msg=message.encode("utf-8"),
@@ -82,8 +86,8 @@ def SignedSlackRoute(
                 secret,
                 version,
             )
-            logging.debug(f"slackette.security: Received signature {expected}")
-            logging.debug(f"slackette.security: Generated signature {actual}")
+            logging.warning(f"slackette.security: Received signature {expected}")
+            logging.warning(f"slackette.security: Generated signature {actual}")
             if actual != expected:
                 raise InvalidSignatureError()
             return endpoint(request)
