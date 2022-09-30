@@ -52,10 +52,10 @@ class _InteractionRouter(object):
                 raise ValueError(f"Invalid url scheme {url.scheme}")
             if url.netloc not in self._domain_handlers:
                 raise ValueError(f"Invalid domain {url.scheme}")
-            text = self._domain_handlers[url.netloc](url.path)
+            _ = self._domain_handlers[url.netloc](url.path)
             response = post(
                 interaction.response_url,
-                json=InteractionResponse(text=text).dict(),
+                json={"delete_original": True},
             )
             response.raise_for_status()
 

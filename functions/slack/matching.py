@@ -104,7 +104,7 @@ def on_matching_action(url: str) -> str:
             f" -> {destination.provider}#{destination.identifier}"
         )
         return "Matching validated"
-    elif action == "deny":
+    elif action == "invalidate":
         logging.debug(
             f"Deny matching {origin.provider}#{origin.identifier}"
             f" -> {destination.provider}#{destination.identifier}"
