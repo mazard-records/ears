@@ -11,12 +11,9 @@ from transport import BeatportTransport
 
 
 class _Settings(BaseSettings):
-    username: str = Field(..., env="USERNAME")
-    password: str = Field(..., env="PASSWORD")
-    wantlist: int = Field(..., env="WANTLIST")
-
-    class Config:
-        env_previx = "BEATPORT_"
+    username: str = Field(..., env="BEATPORT_USERNAME")
+    password: str = Field(..., env="BEATPORT_PASSWORD")
+    wantlist: int = Field(..., env="BEATPORT_WANTLIST")
 
 
 @lru_cache(maxsize=1)
@@ -36,7 +33,7 @@ class WantlistQuery(BaseModel):
     id: int
 
     @validator("id", pre=True)
-    def validate_id(cls, value: Any) -> int
+    def validate_id(cls, value: Any) -> int:
         return int(value)
 
     @classmethod

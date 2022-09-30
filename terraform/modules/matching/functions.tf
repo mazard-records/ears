@@ -55,6 +55,10 @@ resource "google_cloudfunctions_function" "beatport_matching" {
   description = "Add matched track on Beatport"
   runtime     = "python39"
 
+  environment_variables = {
+    BEATPORT_WANTLIST = var.beatport_wantlist
+  }
+
   dynamic "secret_environment_variables" {
     for_each = google_secret_manager_secret.beatport
 

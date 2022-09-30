@@ -24,6 +24,11 @@ variable "region" {
   type        = string
 }
 
+variable "beatport_wantlist" {
+  description = "Identifier of the beatport wantlist to use"
+  type        = string
+}
+
 variable "slack_matching_notification_name" {
   description = "Function to send notification to"
   type        = string
