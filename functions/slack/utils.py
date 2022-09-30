@@ -20,7 +20,7 @@ class RequestProtocol(Protocol):
     def headers(self) -> Mapping[str, Any]:
         ...
 
-    def get_data(self) -> str:
+    def get_data(self) -> bytes:
         ...
 
 
@@ -50,7 +50,7 @@ def compute_slack_signature(
     timestamp = request.headers.get(SlackHeaders.X_SLACK_REQUEST_TIMESTAMP)
     if abs(time() - float(cast(int, timestamp))) > 60 * 5:
         raise ExpiredTimestampError()
-    body = request.get_data()
+    body = request.get_data().decode("utf-8")
     message = f"{version}:{timestamp}:{body}"
     logging.warning(f"slackette.compute_slack_signature: body {body}")
     logging.warning(f"slackette.compute_slack_signature: message {message}")
