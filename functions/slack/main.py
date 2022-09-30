@@ -2,6 +2,7 @@ from functools import lru_cache
 from typing import Any, Dict
 
 from flask import Request, Response, jsonify
+from google.cloud.logging import Client as LoggingClient
 from pydantic import AnyHttpUrl, BaseSettings, Field
 from slackette import (
     Actions,
@@ -12,12 +13,16 @@ from slackette import (
     Markdown,
     PlainText,
     Section,
-    SignedSlackRoute,
+    # SignedSlackRoute,
     SlackWebhook,
     Style
 )
 
 from providers import MatchingTrack
+from utils import SignedSlackRoute
+
+client = LoggingClient()
+client.setup_logging()
 
 
 class _Settings(BaseSettings):
@@ -86,6 +91,7 @@ def on_interactive_webhook(request: Request) -> Response:
     """
     HTTP endpoint that acknowledge user feedback from Slack.
     """
+    print(f"slack.on_interactive_webhook: request data '{request.get_data()}'")
     # TODO: create payload model and evaluate result.
-    print(request.get_json())
+    ## print(request.get_json())
     return jsonify(None)
