@@ -11,7 +11,7 @@ from httpx import post
 from pydantic import AnyHttpUrl, BaseSettings, Field
 from slackette import (
     BlockInteraction,
-    InteractionResponse,
+    InteractionDeleteResponse,
     SlackWebhook,
     verify_slack_signature
 )
@@ -55,7 +55,7 @@ class _InteractionRouter(object):
             _ = self._domain_handlers[url.netloc](url.path)
             response = post(
                 interaction.response_url,
-                json={"delete_original": True},
+                json=InteractionDeleteResponse().dict(),
             )
             response.raise_for_status()
 
