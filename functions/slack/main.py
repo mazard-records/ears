@@ -1,25 +1,26 @@
+import json
+import logging
+
 from functools import lru_cache
-from typing import Any, Dict
+from typing import Callable
+from urllib.parse import urlparse
 
 from flask import Request, Response, jsonify
+from functions.slack.matching import on_matching_action
+from google.cloud.logging import Client as LoggingClient
+from httpx import post
 from pydantic import AnyHttpUrl, BaseSettings, Field
 from slackette import (
-    Actions,
-    Blocks,
-    Button,
-    Divider,
-    Image,
-    Markdown,
-    PlainText,
-    Section,
-    # SignedSlackRoute,
+    BlockInteraction,
+    InteractionResponse,
     SlackWebhook,
-    Style
+    verify_slack_signature
 )
 
-from providers import MatchingTrack
-from utils import SignedSlackRoute
+from matching import MatchingTrack, MatchingTrackNotification
 
+client = LoggingClient()
+client.setup_logging(log_level=logging.DEBUG)
 
 
 class _Settings(BaseSettings):
@@ -28,47 +29,48 @@ class _Settings(BaseSettings):
     webhook: AnyHttpUrl = Field(..., env="SLACK_WEBHOOK")
 
 
+class _InteractionRouter(object):
+    """ Router for interactive callback. """
+
+    def __init__(self) -> None:
+        self._domain_handlers = {}
+
+    def add_domain_handler(
+        self,
+        domain: str,
+        handler: Callable[[str], str],
+    ) -> None:
+        self._domain_handlers[domain] = handler
+
+    def run(self, interaction: BlockInteraction) -> None:
+        for action in interaction.actions:
+            url = urlparse(action.value)
+            if url.scheme != "ears":
+                raise ValueError(f"Invalid url scheme {url.scheme}")
+            if url.netloc not in self._domain_handlers:
+                raise ValueError(f"Invalid domain {url.scheme}")
+            text = self._domain_handlers[url.netloc]()
+            response = post(
+                interaction.response_url,
+                json=InteractionResponse(text=text).dict(),
+            )
+            response.raise_for_status()
+
+
 @lru_cache(maxsize=1)
 def Settings() -> _Settings:
     return _Settings()
 
 
+@lru_cache(maxsize=1)
+def InteractionRouter() -> None:
+    router = _InteractionRouter()
+    router.add_domain_handler("matching", on_matching_action)
+    return router
+
+
 def signing_secret_provider() -> str:
     return Settings().signing
-
-
-def MatchingTrackNotification(track: MatchingTrack) -> Blocks:
-    """
-    Build a rich interactive Slack notification using BlockKit
-    to display the provided matched track entity.
-    """
-    return Blocks(blocks=[
-        Divider(),
-        Section(
-            text=Markdown(
-                text=(
-                    f"{track.to_markdown_link()}\n"
-                    f"*Release:*\n{track.album}\n"
-                    f"*Provider:*\n{track.destination.provider}"
-                )
-            ),
-            accessory=Image(image_url=track.cover),
-        ),
-        Actions(
-            elements=[
-                Button(
-                    style=Style.primary,
-                    text=PlainText(text="Approve"),
-                    value=track.to_uri("validate")
-                ),
-                Button(
-                    style=Style.danger,
-                    text=PlainText(text="Deny"),
-                    value=track.to_uri("invalidate")
-                ),
-            ]
-        )
-    ])
 
 
 def on_matching_event(request: Request) -> Response:
@@ -83,12 +85,14 @@ def on_matching_event(request: Request) -> Response:
     return jsonify(None)
 
 
-@SignedSlackRoute(signing_secret=signing_secret_provider)
+@verify_slack_signature(signing_secret=signing_secret_provider)
 def on_interactive_webhook(request: Request) -> Response:
     """
     HTTP endpoint that acknowledge user feedback from Slack.
     """
-    print(f"slack.on_interactive_webhook: request data '{request.get_data()}'")
-    # TODO: create payload model and evaluate result.
-    ## print(request.get_json())
+    payload = request.form.get("payload", {})
+    decoded = json.loads(payload)
+    interaction = BlockInteraction(**decoded)
+    router = InteractionRouter()
+    router.run(interaction)
     return jsonify(None)
