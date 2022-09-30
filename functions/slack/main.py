@@ -6,7 +6,6 @@ from typing import Callable
 from urllib.parse import urlparse
 
 from flask import Request, Response, jsonify
-from functions.slack.matching import on_matching_action
 from google.cloud.logging import Client as LoggingClient
 from httpx import post
 from pydantic import AnyHttpUrl, BaseSettings, Field
@@ -17,7 +16,11 @@ from slackette import (
     verify_slack_signature
 )
 
-from matching import MatchingTrack, MatchingTrackNotification
+from matching import (
+    MatchingTrack,
+    MatchingTrackNotification,
+    on_matching_action,
+)
 
 client = LoggingClient()
 client.setup_logging(log_level=logging.DEBUG)
