@@ -43,7 +43,8 @@ resource "google_cloudfunctions_function" "slack_interactive_webhook" {
   runtime     = "python39"
 
   environment_variables = {
-    PUBLISHER_PREFIX = format(module.naming.pubsub_topic, "")
+    GOOGLE_PROJECT_ID = module.naming.project_id
+    PUBLISHER_PREFIX  = format(module.naming.pubsub_topic, "")
   }
 
   dynamic "secret_environment_variables" {
