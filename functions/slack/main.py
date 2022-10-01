@@ -99,3 +99,11 @@ def on_interactive_webhook(request: Request) -> Response:
     router = InteractionRouter()
     router.run(interaction)
     return jsonify(None)
+
+
+@verify_slack_signature(signing_secret=signing_secret_provider)
+def on_command_webhook(request: Request) -> Response:
+    """
+    HTTP endpoint that provides command interactivity.
+    """
+    return jsonify(None)

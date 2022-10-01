@@ -1,20 +1,27 @@
-resource "google_secret_manager_secret" "slack" {
-  for_each = toset([
-    "signing_key",
-    "webhook",
-  ])
-
-  secret_id = format(module.naming.secret, "slack-${each.key}")
+resource "google_secret_manager_secret" "signing_key" {
+  secret_id = "slack-signing-key"
 
   replication {
     automatic = true
   }
 }
 
-resource "google_secret_manager_secret_iam_member" "slack" {
-  for_each = google_secret_manager_secret.slack
+resource "google_secret_manager_secret" "webhook" {
+  secret_id = "slack-webhook"
 
-  secret_id = each.value.secret_id
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_iam_member" "signing_key" {
+  secret_id = google_secret_manager_secret.signing_key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.slack.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "webhook" {
+  secret_id = google_secret_manager_secret.webhook.secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.slack.email}"
 }

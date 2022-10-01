@@ -1,0 +1,39 @@
+name: Core
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:    
+      - develop
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          cache: 'pip'
+      - name: Set up poetry
+        run: pip install -r requirements.txt
+      - name: Cache poetry
+        id: poetry
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Setup poetry
+        run: poetry config virtualenvs.in-project true
+      - name: Install dependencies
+        run: poetry install
+      - name: Run black
+        run: |
+          poetry run black ears tests --check
+      - name: Run isort
+        run: |
+          poetry run isort ears tests --check
+      - name: Run mypy
+        run: |
+          poetry run mypy --strict ears tests
