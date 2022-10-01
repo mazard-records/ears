@@ -12,6 +12,7 @@ Producer = Callable[[Dict[str, Any]], None]
 
 class _PublisherSettings(BaseSettings):
     prefix: str = Field(..., env="PUBLISHER_PREFIX")
+    project: str = Field(..., env="GOOGLE_CLOUD_PROJECT")
 
 
 @lru_cache(maxsize=1)
@@ -28,7 +29,12 @@ def PublisherClient() -> _PublisherClient:
 def MessageProducer(provider: str) -> Producer:
     client = PublisherClient()
     settings = PublisherSettings()
-    topic = f"{settings.prefix}{provider}"
+    topic = "/".join([
+        "projects",
+        settings.project,
+        "topics",
+        f"{settings.prefix}{provider}"
+    ])
 
     def publish(message: Dict[str, Any]) -> None:
         future = client.publish(topic, json.dumps(message).encode("utf-8"))
