@@ -81,6 +81,5 @@ resource "google_cloudfunctions_function" "beatport_matching" {
     resource   = google_pubsub_topic.beatport_matching.name
   }
 
-  min_instances = 1
   max_instances = 1
 }

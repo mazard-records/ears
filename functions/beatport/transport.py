@@ -36,7 +36,7 @@ class BeatportTransport(object):
         return self._transport
 
     def add_track_to_playlist(self, playlist_id: int, tracks: List[int]) -> None:
-        endpoint = f"/v4/my/playlists/{playlist_id}/tracks/bulk"
+        endpoint = f"/api/v4/my/playlists/{playlist_id}/tracks/bulk"
         payload = {"track_ids": tracks}
         response = self._transport.post(endpoint, json=payload)
         response.raise_for_status()
