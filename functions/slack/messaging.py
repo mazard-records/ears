@@ -12,7 +12,7 @@ Producer = Callable[[Dict[str, Any]], None]
 
 class _PublisherSettings(BaseSettings):
     prefix: str = Field(..., env="PUBLISHER_PREFIX")
-    project: str = Field(..., env="GOOGLE_CLOUD_PROJECT")
+    project: str = Field(..., env="GCP_PROJECT")
 
 
 @lru_cache(maxsize=1)
