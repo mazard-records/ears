@@ -1,7 +1,7 @@
 from abc import ABC, abstractproperty, abstractmethod
 from typing import List
 
-from ..models import Resource, Track, TrackSearchQuery
+from ..models import PlaylistEvent, Resource, Track, TrackSearchQuery
 
 
 class AbstractMusicProvider(ABC):
@@ -14,26 +14,15 @@ class AbstractMusicProvider(ABC):
         pass
 
     @abstractmethod
-    def get_playlist(
-        self,
-        playlist_urn: str,
-    ) -> List[Track]:
+    def get_playlist(self, event: PlaylistEvent) -> List[Track]:
         pass
 
     @abstractmethod
-    def add_to_playlist(
-        self,
-        playlist_urn: str,
-        track_urn: str,
-    ) -> None:
+    def add_to_playlist(self, event: PlaylistEvent) -> None:
         pass
 
     @abstractmethod
-    def remove_from_playlist(
-        self,
-        playlist_urn: str,
-        track_urn: str,
-    ) -> None:
+    def remove_from_playlist(self, event: PlaylistEvent) -> None:
         pass
 
     @abstractmethod

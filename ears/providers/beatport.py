@@ -6,11 +6,12 @@ from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 
 from . import AbstractMusicProvider
 from ..models import (
+    PlaylistEvent,
     Track,
     TrackMetadata,
     TrackProvider,
     TrackSearchQuery,
-    TrackSource,
+    Resource,
 )
 
 
@@ -43,8 +44,8 @@ class BeatportTrack(BeatportNamedResource):
     sample_url: AnyHttpUrl
     slug: str
 
-    def to_track_source(self) -> TrackSource:
-        return TrackSource(
+    def to_resource(self) -> Resource:
+        return Resource(
             id=self.id,
             provider="beatport",
             url=f"https://www.beatport.com/track/{self.slug}/{self.id}"
@@ -66,7 +67,7 @@ class BeatportTrack(BeatportNamedResource):
     def to_track(self) -> Track:
         return Track(
             metadata=self.to_track_metadata(),
-            source=self.to_track_source(),
+            resource=self.to_resource(),
         )
 
 class BeatportTrackSearchResult(BaseModel):
@@ -127,25 +128,20 @@ class BeatportProvider(AbstractMusicProvider):
         )
         response.raise_for_status()
 
-    def add_to_playlist(
-        self,
-        playlist_urn: str,
-        track_urn: str,
-    ) -> None:
-        track = self.parse_urn(track_urn)
-        playlist = self.parse_urn(playlist_urn)
+    def get_playlist(self, playlist_urn: str) -> List[Track]:
+        raise NotImplementedError()
+
+    def add_to_playlist(self, event: PlaylistEvent) -> None:
+        track = self.parse_urn(event.track_urn)
+        playlist = self.parse_urn(event.playlist_urn)
         endpoint = f"/api/v4/my/playlists/{playlist.id}/tracks/bulk"
         payload = {"track_ids": [track.id]}
         response = self._transport.post(endpoint, json=payload)
         response.raise_for_status()
 
-    def remove_from_playlist(
-        self,
-        playlist_urn: str,
-        track_urn: str,
-    ) -> None:
-        track = self.parse_urn(track_urn)
-        playlist = self.parse_urn(playlist_urn)
+    def remove_from_playlist(self, event: PlaylistEvent) -> None:
+        track = self.parse_urn(event.track_urn)
+        playlist = self.parse_urn(event.playlist_urn)
         endpoint = f"/api/v4/my/playlists/{playlist.id}/tracks/bulk"
         payload = {"item_ids": [track.id]}
         response = self._transport.delete(endpoint, json=payload)

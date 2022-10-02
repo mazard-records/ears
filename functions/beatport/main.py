@@ -1,71 +1,19 @@
-from base64 import b64decode
-from functools import lru_cache
-from json import loads
-from typing import Any, Dict
-from time import sleep
+from typing import Any
 
-from flask import Request, Response, jsonify
-from pydantic import BaseModel, BaseSettings, Field, validator
-
-from models import SearchQuery
-from transport import BeatportTransport
+from ears import handlers
+from ears.providers.beatport import BeatportLoginSettings, BeatportProvider
+from ears.types import Event
 
 
-class _Settings(BaseSettings):
-    username: str = Field(..., env="BEATPORT_USERNAME")
-    password: str = Field(..., env="BEATPORT_PASSWORD")
-    wantlist: int = Field(..., env="BEATPORT_WANTLIST")
-
-    delay: float = 10
-
-
-@lru_cache(maxsize=1)
-def Settings() -> _Settings:
-    return _Settings()
+def on_update_playlist_event(event: Event, _: Any) -> None:
+    settings = BeatportLoginSettings()
+    provider = BeatportProvider()
+    provider.login(settings)
+    handlers.on_update_playlist_event(provider, event)
 
 
-@lru_cache(maxsize=1)
-def AuthenticatedTransport() -> BeatportTransport:
-    settings = Settings()
-    transport = BeatportTransport()
-    transport.login(settings.username, settings.password)
-    return transport
-
-
-class WantlistQuery(BaseModel):
-    id: int
-
-    @validator("id", pre=True)
-    def validate_id(cls, value: Any) -> int:
-        return int(value)
-
-    @classmethod
-    def from_event(cls, event: Dict[str, Any]) -> "WantlistQuery":
-        if "data" not in event:
-            raise ValueError("Missing event data")
-        return cls(**loads(b64decode(event["data"]).decode("utf-8")))
-
-    def to_urn(self) -> str:
-        return f"urn:beatport:{self.id}"
-
-
-def on_search_request(request: Request) -> Response:
-    transport = BeatportTransport()
-    query = SearchQuery(**request.get_json())
-    results = transport.search(query)
-    if len(results.tracks) == 0:
-        return jsonify(None)
-    return jsonify(results.tracks[0].dict())
-
-
-def on_wantlist_event(event: Dict[str, Any], _: Any) -> None:
-    settings = Settings()
-    # NOTE: just in case, add a natural delay to
-    #       prevent from eventual rate limiting.
-    sleep(settings.delay)
-    query = WantlistQuery.from_event(event)
-    transport = AuthenticatedTransport()
-    transport.add_track_to_playlist(
-        settings.wantlist,
-        tracks=[query.id],
-    )
+def on_search_event(event: Event, _: Any) -> None:
+    provider = BeatportProvider()
+    # TODO: update with target topic
+    destination = ...
+    handlers.on_search_event(provider, event, destination)

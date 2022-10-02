@@ -8,6 +8,11 @@ variable "beatport_wantlist" {
   type        = string
 }
 
+variable "deezer_wantlist" {
+  description = "Identifier of the deezer wantlist to use"
+  type        = string
+}
+
 variable "publishers" {
   description = "List of service account allowed to publish actions"
   type        = list(string)

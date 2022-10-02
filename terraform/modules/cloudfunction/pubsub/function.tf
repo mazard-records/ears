@@ -31,17 +31,12 @@ resource "google_cloudfunctions_function" "target" {
   source_archive_bucket        = var.bucket
   source_archive_object        = google_storage_bucket_object.sources_archive.name
   entry_point                  = var.entrypoint
-  ingress_settings             = var.ingress
   service_account_email        = var.service_account
   trigger_http                 = null
 
-  dynamic "event_trigger" {
-    for_each = toset(var.topics)
-
-    content {
-      event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-      resource   = each.key
-    }
+  event_trigger {
+    event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
+    resource   = google_pubsub_topic.topic.name  
   }
 
   max_instances = 1

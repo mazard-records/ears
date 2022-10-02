@@ -6,10 +6,10 @@ authors = ["Félix Voituret <fvoituret@deezer.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-typer = "^0.6.1"
-fastapi = "^0.85.0"
 httpx = "^0.23.0"
-uvicorn = "^0.18.3"
+google-cloud-pubsub = "^2.13.7"
+pydantic = "^1.10.2"
+Flask = "^2.2.2"
 
 [tool.poetry.dev-dependencies]
 

@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, Optional
 
 from pydantic import AnyHttpUrl, BaseModel
@@ -22,7 +23,7 @@ class TrackMetadata(BaseModel):
 
 class Track(BaseModel):
     metadata: TrackMetadata
-    source: Resource
+    resource: Resource
 
 
 class TrackMatching(BaseModel):

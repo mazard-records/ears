@@ -1,11 +1,19 @@
-from flask import Request, Response
+from typing import Any
 
-from ears.handlers import on_get_playlist_request
-from ears.providers.deezer import DeezerProvider
+from ears import handlers
+from ears.providers.deezer import DeezerProvider, DeezerSettings
+from ears.types import Event
 
 
-def get_playlist(request: Request) -> Response:
-    on_get_playlist_request(
-        DeezerProvider(access_token=...),
-        request,
-    )
+def on_broadcast_playlist_event(event: Event, _: Any) -> None:
+    settings = DeezerSettings()
+    provider = DeezerProvider(settings)
+    # TODO: update with target topic
+    destination = ...
+    handlers.on_broadcast_playlist_event(provider, event, destination)
+
+
+def on_update_playlist_event(event: Event, _: Any) -> None:
+    settings = DeezerSettings()
+    provider = DeezerProvider(settings)
+    handlers.on_update_playlist_event(provider, event)

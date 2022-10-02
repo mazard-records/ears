@@ -11,7 +11,6 @@ from .types import Producer, PydanticModel
 
 
 class _PublisherSettings(BaseSettings):
-    prefix: str = Field(..., env="EARS_PUBLISHER_PREFIX")
     project: str = Field(..., env="GOOGLE_PROJECT_ID")
 
 
@@ -26,15 +25,10 @@ def PublisherClient() -> _PublisherClient:
 
 
 @lru_cache(maxsize=10)
-def MessageProducer(topic: str) -> Producer:
+def EventPublisher(topic: str) -> Producer:
     client = PublisherClient()
     settings = PublisherSettings()
-    topic = "/".join([
-        "projects",
-        settings.project,
-        "topics",
-        f"{settings.prefix}{topic}"
-    ])
+    topic = f"projects/{settings.project}/topics/{topic}"
 
     def publish(message: Dict[str, Any]) -> None:
         future = client.publish(

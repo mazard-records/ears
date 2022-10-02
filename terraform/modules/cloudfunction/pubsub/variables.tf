@@ -28,11 +28,6 @@ variable "bucket" {
   type        = string
 }
 
-variable "topics" {
-  description = "List of pubsub topic to listen event triggering"
-  type        = list(string)
-}
-
 variable "memory" {
   default     = 128
   description = "Function allocated memory"
@@ -49,10 +44,4 @@ variable "secrets" {
   default     = {}
   description = "Function secret environment variable as KEY = secret_id"
   type        = map
-}
-
-variable "ingress" {
-  default     = "ALLOW_INTERNAL_ONLY"
-  description = "Function ingress policy"
-  type        = string
 }

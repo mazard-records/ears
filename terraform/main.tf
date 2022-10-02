@@ -36,22 +36,18 @@ resource "google_storage_bucket" "functions" {
 
 module "slack" {
   depends_on = [google_storage_bucket.functions]
-  source     = "../slack"
+  source     = "../ears-slack"
 
   function_bucket = google_storage_bucket.functions.name
 }
 
-module "deezer" {
+module "matching" {
   depends_on = [google_storage_bucket.functions]
-  source     = "../providers/deezer"
-}
-
-module "beatport" {
-  depends_on = [google_storage_bucket.functions]
-  source     = "../providers/beatport"
+  source     = "../ears-matching"
 
   function_bucket   = google_storage_bucket.functions.name
   beatport_wantlist = var.beatport_wantlist
+  deezer_wantlist   = var.deezer_wantlist
   publishers        = [module.slack.service_account]
 }
 
