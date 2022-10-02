@@ -1,26 +1,25 @@
 import json
 
+from functools import lru_cache
 from typing import Any
 
-from ears.messaging import pydantic_model_from_event
 from ears.models import TrackMatching
 from ears.types import Event
 from flask import Request, Response, jsonify
+from httpx import post
 from pydantic import AnyHttpUrl, BaseSettings, Field
 from slackette import (
-    Actions,
     BlockInteraction,
-    Blocks,
-    Button,
-    Divider,
-    Image,
-    Markdown,
-    PlainText,
-    Section,
-    Style,
+    InteractionDeleteResponse,
     SlackWebhook,
     verify_slack_signature,
 )
+from domains.matching import (
+    create_track_matching_notification,
+    on_matching_feedback_request,
+)
+from notifications import NotificationFactory
+from router import Router
 
 
 class SlackSettings(BaseSettings):
@@ -33,38 +32,19 @@ class SlackSettings(BaseSettings):
         return cls().signing
  
 
-def TrackMatchingNotification(matching: TrackMatching) -> Blocks:
-    """
-    Build a rich interactive Slack notification using BlockKit
-    to display the provided matched track entity.
-    """
-    return Blocks(blocks=[
-        Divider(),
-        Section(
-            text=Markdown(
-                text=(
-                    f"{track.to_markdown_link()}\n"
-                    f"*Release:*\n{matching.metadata.album}\n"
-                    f"*Provider:*\n{matching.destination.provider}"
-                )
-            ),
-            accessory=Image(image_url=matching.metadata.cover),
-        ),
-        Actions(
-            elements=[
-                Button(
-                    style=Style.primary,
-                    text=PlainText(text="Approve"),
-                    value=matching.to_uri("validate")
-                ),
-                Button(
-                    style=Style.danger,
-                    text=PlainText(text="Deny"),
-                    value=matching.to_uri("invalidate")
-                ),
-            ]
-        )
-    ])
+@lru_cache(maxsize=1)
+def get_interactivity_router() -> Router:
+    router = Router()
+    router.register("matching", on_matching_feedback_request)
+    # NOTE: add additional interactivity handler here.
+    return router
+
+@lru_cache(maxsize=1)
+def get_notification_factory() -> NotificationFactory:
+    factory = NotificationFactory()
+    factory.register(TrackMatching, create_track_matching_notification)
+    # NOTE: add additional notification factory here.
+    return factory
 
 
 @verify_slack_signature(signing_secret=SlackSettings.signing_secret_provider)
@@ -78,20 +58,35 @@ def on_command_webhook(request: Request) -> Response:
 @verify_slack_signature(signing_secret=SlackSettings.signing_secret_provider)
 def on_interactive_webhook(request: Request) -> Response:
     """
-    HTTP endpoint that acknowledge user feedback from Slack.
+    HTTP webhook for Slack interactivity callback. Evaluate actions
+    payload as internal protocol to trigger associated handlers.
     """
     payload = request.form.get("payload", {})
     decoded = json.loads(payload)
     interaction = BlockInteraction(**decoded)
-    # TODO: refactor this using protocol abstraction ?
-    # router = InteractionRouter()
-    # router.run(interaction)
+    router = get_interactivity_router()
+    try:
+        for action in interaction.actions:
+            router.serve(action.value)
+        response = post(
+            interaction.response_url,
+            json=InteractionDeleteResponse().dict(),
+        )
+        response.raise_for_status()
+    except Exception as e:
+        # TODO: process with feedback / log.
+        # TODO: return error response.
+        pass
     return jsonify(None)
 
 
-def on_matching_event(event: Event, _: Any) -> None:
+def on_push_notification_event(event: Event, _: Any) -> None:
+    """
+    PubSub entrypoint for pushing notification from registered
+    Blocks factory.
+    """
+    factory = get_notification_factory()
+    notification = factory.create(event)
     settings = SlackSettings()
-    matching = pydantic_model_from_event(TrackMatching, event)
-    notification = TrackMatchingNotification(matching)
     webhook = SlackWebhook(settings.webhook)
     webhook(notification)
