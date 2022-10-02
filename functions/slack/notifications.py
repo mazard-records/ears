@@ -6,6 +6,10 @@ from slackette import Blocks
 from ears.messaging import pydantic_model_from_event
 from ears.types import Event, PydanticModel
 
+ModelFactories = Dict[str, Type[BaseModel]]
+BlockFactory = Callable[[BaseModel], Blocks]
+BlocksFactories = Dict[str, BlockFactory]
+
 
 class NotificationEvent(BaseModel):
     model: str
@@ -14,20 +18,27 @@ class NotificationEvent(BaseModel):
 
 class NotificationFactory(object):
     def __init__(self) -> None:
-        self._model_factories = {}
-        self._notification_factories = {}
+        self._model_factories: ModelFactories = {}
+        self._notification_factories: BlocksFactories = {}
 
     def register(
         self,
         model: Type[PydanticModel],
-        factory: Callable[[PydanticModel], Blocks],
+        factory: BlockFactory,
     ) -> None:
         self._model_factories[model.__name__] = model
         self._notification_factories[model.__name__] = factory
 
     def create(self, event: Event) -> Blocks:
-        notification_event = pydantic_model_from_event(NotificationEvent, event)
-        if event.model not in self._model_factories:
-            raise ValueError(f"No factory available for model {event.model}")
-        model = self._model_factories[event.model](**event.data)
-        return self._notification_factories(model)
+        notification_event = pydantic_model_from_event(
+            NotificationEvent,
+            event,
+        )
+        if notification_event.model not in self._model_factories:
+            raise ValueError(
+                f"No factory available for model {notification_event.model}"
+            )
+        model = self._model_factories[notification_event.model](
+            **notification_event.data,
+        )
+        return self._notification_factories[notification_event.model](model)

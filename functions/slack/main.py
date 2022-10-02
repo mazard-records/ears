@@ -43,7 +43,7 @@ def get_interactivity_router() -> Router:
 @lru_cache(maxsize=1)
 def get_notification_factory() -> NotificationFactory:
     factory = NotificationFactory()
-    factory.register(TrackMatching, create_track_matching_notification)
+    factory.register(TrackMatching, create_track_matching_notification)  # type: ignore
     # NOTE: add additional notification factory here.
     return factory
 

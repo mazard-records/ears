@@ -32,6 +32,11 @@ def EventPublisher(topic: str) -> EventPublisherType:
     return publish
 
 
+def publish(topic: str, event: PydanticEvent) -> None:
+    publisher = EventPublisher(topic)
+    publisher(event)
+
+
 def pydantic_model_from_event(
     model: Type[PydanticModel],
     event: Event,
