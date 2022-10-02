@@ -4,13 +4,19 @@ from typing import Any, Optional
 from pydantic import AnyHttpUrl, BaseModel
 
 
+class ResourceType(str, Enum):
+    playlist = "playlist"
+    track = "track"
+
+
 class Resource(BaseModel):
     id: Any
     provider: str
+    type: ResourceType
     url: Optional[AnyHttpUrl] = None
 
     def to_urn(self) -> str:
-        return f"urn:{self.provider}:{self.id}"
+        return f"urn:{self.provider}:{self.type}:{self.id}"
 
 
 class TrackMetadata(BaseModel):

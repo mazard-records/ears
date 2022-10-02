@@ -3,7 +3,7 @@ from typing import List, Optional
 from httpx import Client
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 
-from ..models import Resource, Track, TrackMetadata, TrackSearchQuery
+from ..models import Resource, ResourceType, Track, TrackMetadata, TrackSearchQuery
 from . import AbstractMusicProvider
 
 
@@ -33,6 +33,7 @@ class DeezerTrack(BaseModel):
             id=self.id,
             provider="deezer",
             url=self.link,
+            type=ResourceType.track,
         )
 
     def to_track_metadata(self) -> TrackMetadata:

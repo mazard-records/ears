@@ -48,17 +48,21 @@ class AbstractMusicProvider(ABC):
         Parse the given URN into a target TrackSource.
         Such URN are designed as follow:
 
-        urn:PROVIDER:IDENTIFIER
+        urn:PROVIDER:TYPE:IDENTIFIER
 
         Where given provider should match this object target.
         """
         if urn is None:
             raise ValueError()
         tokens = urn.split(":")
-        if len(tokens) != 3 or tokens[0] != "urn":
+        if len(tokens) != 4 or tokens[0] != "urn":
             raise ValueError(f"Invalid urn {urn}")
         if tokens[1] != self.name:
             raise ValueError(
                 f"Provider mismatch, expected {self.name}, got {tokens[0]}"
             )
-        return Resource(id=tokens[2], provider=tokens[1])
+        return Resource(
+            id=tokens[3],
+            provider=tokens[1],
+            type=tokens[2],
+        )

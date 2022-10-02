@@ -1,27 +1,17 @@
 import json
-
 from urllib.parse import quote
-from ears.models import TrackSearchQuery
 
-from ears.providers.beatport import BeatportProvider, BeatportLoginSettings
 from pytest_httpx import HTTPXMock
 
-_API = "https://www.beatport.com/api/v4"
-_PLAYLIST_ENDPOINT = (
-    f"{_API}"
-    "/my"
-    "/playlists"
-    "/666"
-    "/tracks"
-)
-_PLAYLIST_URN = "urn:beatport:666"
-_TRACK_URN = "urn:beatport:42"
+from ears.models import ResourceType, TrackSearchQuery
+from ears.providers.beatport import BeatportLoginSettings, BeatportProvider
 
-_LOGIN_PRIORS = (
-    "my-beatport",
-    "account",
-    "csrfcheck"
-)
+_API = "https://www.beatport.com/api/v4"
+_PLAYLIST_ENDPOINT = f"{_API}" "/my" "/playlists" "/666" "/tracks"
+_PLAYLIST_URN = "urn:beatport:playlist:666"
+_TRACK_URN = "urn:beatport:track:42"
+
+_LOGIN_PRIORS = ("my-beatport", "account", "csrfcheck")
 
 
 def test_login(httpx_mock: HTTPXMock) -> None:
@@ -132,7 +122,7 @@ def test_search(httpx_mock: HTTPXMock) -> None:
                     "slug": "off-to-paradise",
                 }
             ]
-        }
+        },
     )
     provider = BeatportProvider()
     tracks = provider.search(query)
@@ -140,6 +130,7 @@ def test_search(httpx_mock: HTTPXMock) -> None:
     assert tracks[0].resource.id == 42
     assert tracks[0].resource.provider == "beatport"
     assert tracks[0].resource.url == "https://www.beatport.com/track/off-to-paradise/42"
+    assert tracks[0].resource.type == ResourceType.track
     assert tracks[0].metadata.album == "Off to paradise"
     assert tracks[0].metadata.artist == "Demuja"
     assert tracks[0].metadata.title == "Off to paradise"

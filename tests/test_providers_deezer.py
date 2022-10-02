@@ -1,14 +1,13 @@
-from ears.providers.deezer import DeezerProvider, DeezerSettings
 from pytest_httpx import HTTPXMock
 
+from ears.models import ResourceType
+from ears.providers.deezer import DeezerProvider, DeezerSettings
+
 _PLAYLIST_ENDPOINT = (
-    "https://api.deezer.com"
-    "/playlist"
-    "/666"
-    "/tracks?access_token=token&songs=42"
+    "https://api.deezer.com" "/playlist" "/666" "/tracks?access_token=token&songs=42"
 )
-_PLAYLIST_URN = "urn:deezer:666"
-_TRACK_URN = "urn:deezer:42"
+_PLAYLIST_URN = "urn:deezer:playlist:666"
+_TRACK_URN = "urn:deezer:track:42"
 
 
 def test_get_playlist(httpx_mock: HTTPXMock) -> None:
@@ -29,11 +28,12 @@ def test_get_playlist(httpx_mock: HTTPXMock) -> None:
                         "album": {
                             "title": "La fete est finie",
                             "cover": "https://deezer.com/track/42/preview",
-                        }
+                        },
                     }
                 ]
             }
-    })
+        },
+    )
     settings = DeezerSettings(access_token="token")
     provider = DeezerProvider(settings)
     tracks = provider.get_playlist(_PLAYLIST_URN)
@@ -41,6 +41,7 @@ def test_get_playlist(httpx_mock: HTTPXMock) -> None:
     assert tracks[0].resource.id == 42
     assert tracks[0].resource.provider == "deezer"
     assert tracks[0].resource.url == "https://deezer.com/track/42"
+    assert tracks[0].resource.type == ResourceType.track
     assert tracks[0].metadata.album == "La fete est finie"
     assert tracks[0].metadata.artist == "Orelsan"
     assert tracks[0].metadata.title == "San"

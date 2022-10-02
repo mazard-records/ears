@@ -1,29 +1,27 @@
+import json
 from base64 import b64encode
 from os import environ
+from unittest.mock import Mock
 
 from pydantic import BaseModel
 
-from ears.messaging import (
-    EventPublisher,
-    PublisherSettings,
-    PublisherClient,
-    pydantic_model_from_event,
-)
+from ears.messaging import EventPublisher, PublisherSettings, pydantic_model_from_event
 
 
 def test_publisher_settings() -> None:
     environ.update(GOOGLE_PROJECT_ID="ears")
     settings = PublisherSettings()
-    assert id(settings) == id(PublisherSettings())
     assert settings.project == "ears"
 
 
-def test_publisher_client() -> None:
-    assert id(PublisherClient()) == id(PublisherClient())
-
-
-def test_event_publisher() -> None:
-    raise NotImplementedError()
+def test_event_publisher(publisher_mock: Mock) -> None:
+    publisher = EventPublisher("cipot")
+    message = {"foo": "bar"}
+    publisher(message)
+    publisher_mock.assert_called_once_with(
+        "projects/ears/topics/cipot",
+        json.dumps(message).encode("utf-8"),
+    )
 
 
 class _Model(BaseModel):

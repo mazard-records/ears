@@ -14,7 +14,7 @@ def on_broadcast_playlist_event(
     tracks = provider.get_playlist(playlist_event.playlist_urn)
     publisher = EventPublisher(destination)
     for track in tracks:
-        publisher(track.dict())
+        publisher(track)
 
 
 def on_update_playlist_event(
@@ -45,4 +45,4 @@ def on_search_event(
         # TODO: figure out what to do here.
         return
     publisher = EventPublisher(destination)
-    publisher(results[0].dict())
+    publisher(results[0])

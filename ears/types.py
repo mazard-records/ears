@@ -1,7 +1,8 @@
-from typing import Any, Callable, Dict, TypeVar
+from typing import Any, Callable, Dict, TypeVar, Union
 
 from pydantic import BaseModel
 
 Event = Dict[str, Any]
-Producer = Callable[[Dict[str, Any]], None]
 PydanticModel = TypeVar("PydanticModel", bound=BaseModel)
+PydanticEvent = Union[Event, BaseModel]
+EventPublisherType = Callable[[Union[Dict[str, Any], PydanticEvent]], None]

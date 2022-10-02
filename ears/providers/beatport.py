@@ -4,12 +4,7 @@ from urllib.parse import quote
 from httpx import Client
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 
-from ..models import (
-    Resource,
-    Track,
-    TrackMetadata,
-    TrackSearchQuery,
-)
+from ..models import Resource, ResourceType, Track, TrackMetadata, TrackSearchQuery
 from . import AbstractMusicProvider
 
 
@@ -47,6 +42,7 @@ class BeatportTrack(BeatportNamedResource):
             id=self.id,
             provider="beatport",
             url=f"https://www.beatport.com/track/{self.slug}/{self.id}",
+            type=ResourceType.track,
         )
 
     def to_track_metadata(self) -> TrackMetadata:
