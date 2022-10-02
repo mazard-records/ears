@@ -61,4 +61,4 @@ class AbstractMusicProvider(ABC):
             raise ValueError(
                 f"Provider mismatch, expected {self.name}, got {tokens[0]}"
             )
-        return Resource(identifier=tokens[2], provider=tokens[1])
+        return Resource(id=tokens[2], provider=tokens[1])

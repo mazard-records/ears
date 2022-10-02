@@ -107,6 +107,10 @@ class BeatportProvider(AbstractMusicProvider):
             },
         )
 
+    @property
+    def name(self) -> str:
+        return "beatport"
+
     def login(
         self,
         settings: BeatportLoginSettings,

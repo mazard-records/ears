@@ -4,13 +4,7 @@ from urllib.parse import quote
 from ears.models import TrackSearchQuery
 
 from ears.providers.beatport import BeatportProvider
-from pytest import fixture
 from pytest_httpx import HTTPXMock
-
-
-@fixture(scope="session")
-def beatport_provider() -> BeatportProvider:
-    return BeatportProvider()
 
 _API = "https://www.beatport.com/api/v4"
 _PLAYLIST_ENDPOINT = (
@@ -24,22 +18,17 @@ _PLAYLIST_URN = "urn:beatport:666"
 _TRACK_URN = "urn:beatport:42"
 
 
-def test_login(
-    beatport_provider: BeatportProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
-    pass
+def test_login(httpx_mock: HTTPXMock) -> None:
+    raise NotImplementedError()
 
 
-def test_add_to_playlist(
-    beatport_provider: BeatportProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
+def test_add_to_playlist(httpx_mock: HTTPXMock) -> None:
     httpx_mock.add_response(
         url=f"{_PLAYLIST_ENDPOINT}/bulk",
         method="POST",
     )
-    beatport_provider.add_to_playlist(_PLAYLIST_URN, _TRACK_URN)
+    provider = BeatportProvider()
+    provider.add_to_playlist(_PLAYLIST_URN, _TRACK_URN)
     requests = httpx_mock.get_requests(
         url=f"{_PLAYLIST_ENDPOINT}/bulk",
         method="POST",
@@ -48,18 +37,16 @@ def test_add_to_playlist(
     payload = json.loads(requests[0].content.decode("utf-8"))
     assert "track_ids" in payload
     assert len(payload["track_ids"]) == 1
-    assert payload["track_ids"][0] == 42
+    assert payload["track_ids"][0] == "42"
 
 
-def test_remove_from_playlist(
-    beatport_provider: BeatportProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
+def test_remove_from_playlist(httpx_mock: HTTPXMock) -> None:
     httpx_mock.add_response(
         url=f"{_PLAYLIST_ENDPOINT}/42",
         method="DELETE",
     )
-    beatport_provider.remove_from_playlist(_PLAYLIST_URN, _TRACK_URN)
+    provider = BeatportProvider()
+    provider.remove_from_playlist(_PLAYLIST_URN, _TRACK_URN)
     requests = httpx_mock.get_requests(
         url=f"{_PLAYLIST_ENDPOINT}/42",
         method="DELETE",
@@ -67,10 +54,7 @@ def test_remove_from_playlist(
     assert len(requests) == 1
 
 
-def test_search(
-    beatport_provider: BeatportProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
+def test_search(httpx_mock: HTTPXMock) -> None:
     query = TrackSearchQuery(
         title="Off to paradise",
         artist="Demuja",
@@ -88,12 +72,13 @@ def test_search(
             "tracks": [
                 {
                     "id": 42,
-                    "name": "Off to Paradise",
+                    "name": "Off to paradise",
                     "artists": [
                         {
                             "id": 69,
                             "slug": "demuja",
                             "name": "Demuja",
+                            "url": "https://demuja.io",
                         },
                     ],
                     "image": {
@@ -103,7 +88,11 @@ def test_search(
                     "mix_name": "Original mix",
                     "release": {
                         "id": 13,
-                        "name": "Off to paradise"
+                        "name": "Off to paradise",
+                        "image": {
+                            "id": 51,
+                            "uri": "https://demuja.png",
+                        },
                     },
                     "sample_url": "https://demuja.mp3",
                     "slug": "off-to-paradise",
@@ -111,7 +100,8 @@ def test_search(
             ]
         }
     )
-    tracks = beatport_provider.search(query)
+    provider = BeatportProvider()
+    tracks = provider.search(query)
     assert len(tracks) == 1
     assert tracks[0].resource.id == 42
     assert tracks[0].resource.provider == "beatport"

@@ -6,12 +6,12 @@ from ears.handlers import (
 
 
 def test_on_broadcast_playlist_event() -> None:
-    pass
+    raise NotImplementedError()
 
 
 def test_on_update_playlist_event() -> None:
-    pass
+    raise NotImplementedError()
 
 
 def test_on_search_event() -> None:
-    pass
+    raise NotImplementedError()

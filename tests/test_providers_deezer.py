@@ -1,14 +1,5 @@
 from ears.providers.deezer import DeezerProvider, DeezerSettings
-from pytest import fixture
 from pytest_httpx import HTTPXMock
-
-
-@fixture(scope="session")
-def deezer_provider() -> None:
-    settings = DeezerSettings(access_token="token")
-    provider = DeezerProvider(settings)
-    return provider
-
 
 _PLAYLIST_ENDPOINT = (
     "https://api.deezer.com"
@@ -20,10 +11,7 @@ _PLAYLIST_URN = "urn:deezer:666"
 _TRACK_URN = "urn:deezer:42"
 
 
-def test_get_playlist(
-    deezer_provider: DeezerProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
+def test_get_playlist(httpx_mock: HTTPXMock) -> None:
     httpx_mock.add_response(
         url="https://api.deezer.com/playlist/666?access_token=token",
         method="GET",
@@ -46,7 +34,9 @@ def test_get_playlist(
                 ]
             }
     })
-    tracks = deezer_provider.get_playlist(_PLAYLIST_URN)
+    settings = DeezerSettings(access_token="token")
+    provider = DeezerProvider(settings)
+    tracks = provider.get_playlist(_PLAYLIST_URN)
     assert len(tracks) == 1
     assert tracks[0].resource.id == 42
     assert tracks[0].resource.provider == "deezer"
@@ -58,15 +48,14 @@ def test_get_playlist(
     assert tracks[0].metadata.preview == "https://deezer.com/track/42/preview"
 
 
-def test_add_to_playlist(
-    deezer_provider: DeezerProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
+def test_add_to_playlist(httpx_mock: HTTPXMock) -> None:
     httpx_mock.add_response(
         url=_PLAYLIST_ENDPOINT,
         method="POST",
     )
-    deezer_provider.add_to_playlist(_PLAYLIST_URN, _TRACK_URN)
+    settings = DeezerSettings(access_token="token")
+    provider = DeezerProvider(settings)
+    provider.add_to_playlist(_PLAYLIST_URN, _TRACK_URN)
     requests = httpx_mock.get_requests(
         url=_PLAYLIST_ENDPOINT,
         method="POST",
@@ -74,15 +63,14 @@ def test_add_to_playlist(
     assert len(requests) == 1
 
 
-def test_remove_from_playlist(
-    deezer_provider: DeezerProvider,
-    httpx_mock: HTTPXMock,
-) -> None:
+def test_remove_from_playlist(httpx_mock: HTTPXMock) -> None:
     httpx_mock.add_response(
         url=_PLAYLIST_ENDPOINT,
         method="DELETE",
     )
-    deezer_provider.remove_from_playlist(_PLAYLIST_URN, _TRACK_URN)
+    settings = DeezerSettings(access_token="token")
+    provider = DeezerProvider(settings)
+    provider.remove_from_playlist(_PLAYLIST_URN, _TRACK_URN)
     requests = httpx_mock.get_requests(
         url=_PLAYLIST_ENDPOINT,
         method="DELETE",

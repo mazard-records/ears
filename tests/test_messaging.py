@@ -12,11 +12,9 @@ from ears.messaging import (
 
 
 def test_publisher_settings() -> None:
-    environ.update(EARS_PUBLISHER_PREFIX="tympan")
     environ.update(GOOGLE_PROJECT_ID="ears")
     settings = PublisherSettings()
     assert id(settings) == id(PublisherSettings())
-    assert settings.prefix == "tympan"
     assert settings.project == "ears"
 
 
@@ -25,7 +23,7 @@ def test_publisher_client() -> None:
 
 
 def test_event_publisher() -> None:
-    pass
+    raise NotImplementedError()
 
 
 class _Model(BaseModel):

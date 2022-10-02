@@ -70,6 +70,10 @@ class DeezerProvider(AbstractMusicProvider):
     def _url(self, path: str) -> str:
         return f"{path}?access_token={self._access_token}"
 
+    @property
+    def name(self) -> str:
+        return "deezer"
+
     def get_playlist(
         self,
         playlist_urn: str,
