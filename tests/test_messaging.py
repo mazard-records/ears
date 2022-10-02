@@ -4,9 +4,9 @@ from os import environ
 from pydantic import BaseModel
 
 from ears.messaging import (
+    EventPublisher,
     PublisherSettings,
     PublisherClient,
-    MessageProducer,
     pydantic_model_from_event,
 )
 
@@ -24,7 +24,7 @@ def test_publisher_client() -> None:
     assert id(PublisherClient()) == id(PublisherClient())
 
 
-def test_message_producer() -> None:
+def test_event_publisher() -> None:
     pass
 
 

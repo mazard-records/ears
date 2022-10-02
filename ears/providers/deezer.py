@@ -1,16 +1,10 @@
-from typing import List
+from typing import List, Optional
 
 from httpx import Client
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 
-from . import AbstractTrackProvider
-from ..models import (
-    PlaylistEvent,
-    Resource,
-    Track,
-    TrackMetadata,
-    TrackSearchQuery,
-)
+from ..models import Resource, Track, TrackMetadata, TrackSearchQuery
+from . import AbstractMusicProvider
 
 
 class DeezerSettings(BaseSettings):
@@ -65,7 +59,7 @@ class DeezerPlaylist(BaseModel):
     tracks: DeezerPlaylistTracks
 
 
-class DeezerProvider(AbstractTrackProvider):
+class DeezerProvider(AbstractMusicProvider):
 
     URL = "https://api.deezer.com"
 
@@ -76,7 +70,10 @@ class DeezerProvider(AbstractTrackProvider):
     def _url(self, path: str) -> str:
         return f"{path}?access_token={self._access_token}"
 
-    def get_playlist(self, playlist_urn: str) -> List[Track]:
+    def get_playlist(
+        self,
+        playlist_urn: str,
+    ) -> List[Track]:
         playlist = self.parse_urn(playlist_urn)
         endpoint = self._url(f"/playlist/{playlist.id}")
         response = self._transport.get(endpoint)
@@ -84,15 +81,23 @@ class DeezerProvider(AbstractTrackProvider):
         results = DeezerPlaylist(**response.json())
         return [result.to_track() for result in results.tracks.data]
 
-    def add_to_playlist(self, playlist_urn: str, track_urn: str) -> None:
+    def add_to_playlist(
+        self,
+        playlist_urn: str,
+        track_urn: Optional[str],
+    ) -> None:
         playlist = self.parse_urn(playlist_urn)
         track = self.parse_urn(track_urn)
         endpoint = self._url(f"/playlist/{playlist.id}/tracks")
         endpoint = f"{endpoint}&songs={track.id}"
-        response = self._transport.port(endpoint)
+        response = self._transport.post(endpoint)
         response.raise_for_status()
 
-    def remove_from_playlist(self, playlist_urn: str, track_urn: str) -> None:
+    def remove_from_playlist(
+        self,
+        playlist_urn: str,
+        track_urn: Optional[str],
+    ) -> None:
         playlist = self.parse_urn(playlist_urn)
         track = self.parse_urn(track_urn)
         endpoint = self._url(f"/playlist/{playlist.id}/tracks")
@@ -100,6 +105,8 @@ class DeezerProvider(AbstractTrackProvider):
         response = self._transport.delete(endpoint)
         response.raise_for_status()
 
-    def search(query: TrackSearchQuery) -> List[Track]:
+    def search(
+        self,
+        query: TrackSearchQuery,
+    ) -> List[Track]:
         raise NotImplementedError()
-

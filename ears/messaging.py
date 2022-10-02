@@ -1,10 +1,9 @@
 import json
-
 from base64 import b64decode
 from functools import lru_cache
 from typing import Any, Dict, Type
 
-from google.cloud.pubsub_v1 import PublisherClient as _PublisherClient
+from google.cloud.pubsub_v1 import PublisherClient as _PublisherClient  # type: ignore
 from pydantic import BaseSettings, Field
 
 from .types import Producer, PydanticModel

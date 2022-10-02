@@ -31,14 +31,6 @@ class TrackMatching(BaseModel):
     destination: Resource
     metadata: TrackMetadata
 
-    def to_url(self) -> str:
-        path = "/".join([
-            "matching",
-            self.origin.to_urn(),
-            self.destination.to_urn(),
-        ])
-        return f"ears://{path}"
-
 
 class TrackSearchQuery(BaseModel):
     album: Optional[str] = None

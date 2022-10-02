@@ -4,15 +4,13 @@ from urllib.parse import quote
 from httpx import Client
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 
-from . import AbstractMusicProvider
 from ..models import (
-    PlaylistEvent,
+    Resource,
     Track,
     TrackMetadata,
-    TrackProvider,
     TrackSearchQuery,
-    Resource,
 )
+from . import AbstractMusicProvider
 
 
 class BeatportIdentifiableResource(BaseModel):
@@ -48,9 +46,9 @@ class BeatportTrack(BeatportNamedResource):
         return Resource(
             id=self.id,
             provider="beatport",
-            url=f"https://www.beatport.com/track/{self.slug}/{self.id}"
+            url=f"https://www.beatport.com/track/{self.slug}/{self.id}",
         )
-    
+
     def to_track_metadata(self) -> TrackMetadata:
         if len(self.artists) == 0:
             artist = "Unknown"
@@ -70,12 +68,8 @@ class BeatportTrack(BeatportNamedResource):
             resource=self.to_resource(),
         )
 
+
 class BeatportTrackSearchResult(BaseModel):
-    count: int
-    page: str
-    per_page: int
-    next: Optional[str]
-    previous: Optional[str]
     tracks: List[BeatportTrack]
 
 
@@ -97,7 +91,7 @@ class BeatportProvider(AbstractMusicProvider):
 
     URL = "https://www.beatport.com"
 
-    USER_AGENT =  (
+    USER_AGENT = (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
         "AppleWebKit/605.1.15 (KHTML, like Gecko) "
         "Version/15.1 Safari/605.1.15"
@@ -113,50 +107,65 @@ class BeatportProvider(AbstractMusicProvider):
             },
         )
 
-    def login(self, settings: BeatportLoginSettings) -> None:
+    def login(
+        self,
+        settings: BeatportLoginSettings,
+    ) -> None:
         # NOTE: perform some prior call to fill cookies
         #       and get a valid CSRF token.
         self._transport.get("/api/my-beatport")
         self._transport.get("/api/account")
         self._transport.get("/api/csrfcheck")
+        csrf_token = self._transport.cookies.get("_csrf_token")
         headers = self.LOGIN_HEADERS.copy()
-        headers["X-CSRFToken"] = self._transport.cookies.get("_csrf_token")
+        if csrf_token is None:
+            raise ValueError("Missing CSRF token")
+        headers["X-CSRFToken"] = csrf_token
         response = self._transport.post(
-            "/api/account/login",
-            headers=headers,
-            json=settings.dict()
+            "/api/account/login", headers=headers, json=settings.dict()
         )
         response.raise_for_status()
 
-    def get_playlist(self, playlist_urn: str) -> List[Track]:
+    def get_playlist(
+        self,
+        playlist_urn: str,
+    ) -> List[Track]:
         raise NotImplementedError()
 
-    def add_to_playlist(self, event: PlaylistEvent) -> None:
-        track = self.parse_urn(event.track_urn)
-        playlist = self.parse_urn(event.playlist_urn)
+    def add_to_playlist(
+        self,
+        playlist_urn: str,
+        track_urn: Optional[str],
+    ) -> None:
+        playlist = self.parse_urn(playlist_urn)
+        track = self.parse_urn(track_urn)
         endpoint = f"/api/v4/my/playlists/{playlist.id}/tracks/bulk"
         payload = {"track_ids": [track.id]}
         response = self._transport.post(endpoint, json=payload)
         response.raise_for_status()
 
-    def remove_from_playlist(self, event: PlaylistEvent) -> None:
-        track = self.parse_urn(event.track_urn)
-        playlist = self.parse_urn(event.playlist_urn)
-        endpoint = f"/api/v4/my/playlists/{playlist.id}/tracks/bulk"
-        payload = {"item_ids": [track.id]}
-        response = self._transport.delete(endpoint, json=payload)
+    def remove_from_playlist(
+        self,
+        playlist_urn: str,
+        track_urn: Optional[str],
+    ) -> None:
+        playlist = self.parse_urn(playlist_urn)
+        track = self.parse_urn(track_urn)
+        endpoint = f"/api/v4/my/playlists/{playlist.id}/tracks/{track.id}"
+        response = self._transport.delete(endpoint)
         response.raise_for_status()
 
     def search(
         self,
         query: TrackSearchQuery,
     ) -> List[Track]:
-        query = (
+        endpoint = (
+            "/api/v4/catalog/search"
+            "?type=tracks"
             f"q={quote(query.title)}"
             f"&artist_name={quote(query.artist)}"
-            "&type=tracks"
         )
-        response = self._transport.get(f"/api/v4/catalog/search?{query}")
+        response = self._transport.get(endpoint)
         response.raise_for_status()
         results = BeatportTrackSearchResult(**response.json())
-        return [result.to_track() for result in results]
+        return [result.to_track() for result in results.tracks]
