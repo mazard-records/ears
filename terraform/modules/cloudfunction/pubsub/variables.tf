@@ -45,3 +45,9 @@ variable "secrets" {
   description = "Function secret environment variable as KEY = secret_id"
   type        = map
 }
+
+variable "publishers" {
+  default     = []
+  description = "List of service account allowed to publish event"
+  type        = list(string)
+}

@@ -8,6 +8,7 @@ module "deezer_update_playlist" {
   description     = "Update a target playlist on Deezer"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
+  publishers      = var.publishers
 
   envvars = {
     DEEEZER_WANTLIST = var.deezer_wantlist
@@ -29,6 +30,7 @@ module "beatport_update_playlist" {
   description     = "Update a target playlist on Beatport"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
+  publishers      = var.publishers
 
   envvars = {
     BEATPORT_WANTLIST = var.beatport_wantlist
