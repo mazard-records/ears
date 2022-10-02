@@ -3,7 +3,7 @@ import json
 from urllib.parse import quote
 from ears.models import TrackSearchQuery
 
-from ears.providers.beatport import BeatportProvider
+from ears.providers.beatport import BeatportProvider, BeatportLoginSettings
 from pytest_httpx import HTTPXMock
 
 _API = "https://www.beatport.com/api/v4"
@@ -17,9 +17,43 @@ _PLAYLIST_ENDPOINT = (
 _PLAYLIST_URN = "urn:beatport:666"
 _TRACK_URN = "urn:beatport:42"
 
+_LOGIN_PRIORS = (
+    "my-beatport",
+    "account",
+    "csrfcheck"
+)
+
 
 def test_login(httpx_mock: HTTPXMock) -> None:
-    raise NotImplementedError()
+    for prior in _LOGIN_PRIORS:
+        httpx_mock.add_response(
+            method="GET",
+            url=f"https://www.beatport.com/api/{prior}",
+        )
+    httpx_mock.add_response(
+        method="POST",
+        url="https://www.beatport.com/api/account/login",
+    )
+    settings = BeatportLoginSettings(username="Faylixe", password="You wish")
+    provider = BeatportProvider()
+    provider._transport.cookies.update({"_csrf_token": "hack"})
+    provider.login(settings)
+    for prior in _LOGIN_PRIORS:
+        requests = httpx_mock.get_requests(
+            url=f"https://www.beatport.com/api/{prior}",
+            method="GET",
+        )
+        assert len(requests) == 1
+    requests = httpx_mock.get_requests(
+        method="POST",
+        url="https://www.beatport.com/api/account/login",
+    )
+    assert len(requests) == 1
+    assert requests[0].headers.get("X-CSRFToken") == "hack"
+    payload = json.loads(requests[0].content.decode("utf-8"))
+    assert payload.get("username") == "Faylixe"
+    assert payload.get("password") == "You wish"
+    assert payload.get("remember") == False
 
 
 def test_add_to_playlist(httpx_mock: HTTPXMock) -> None:
