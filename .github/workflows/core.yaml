@@ -2,10 +2,10 @@ name: Core
 on:
   push:
     branches:
-      - develop
+      - main
   pull_request:
     branches:    
-      - develop
+      - main
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
           python-version: 3.9
           cache: 'pip'
       - name: Set up poetry
-        run: pip install -r requirements.txt
+        run: pip install poetry
       - name: Cache poetry
         id: poetry
         uses: actions/cache@v2

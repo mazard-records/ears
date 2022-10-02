@@ -2,10 +2,10 @@ name: Functions
 on:
   push:
     branches:
-      - develop
+      - main
   pull_request:
     branches:    
-      - develop
+      - main
 jobs:
   checks:
     runs-on: ubuntu-latest
