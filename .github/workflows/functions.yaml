@@ -21,21 +21,27 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Cache pip dependencies
-        uses: actions/cache@v1
-        id: requirements
+          cache: 'pip'
+      - name: Cache poetry
+        id: poetry
+        uses: actions/cache@v2
         with:
-          path: ~/.cache/pip
-          key: pip-${{ matrix.functions }}-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            pip-${{ matrix.functions }}-
-      - name: Install tooling
-        run: pip install black isort mypy
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Setup poetry
+        run: poetry config virtualenvs.in-project true
       - name: Install dependencies
-        run: pip install -r functions/${{ matrix.functions }}/requirements.txt
-        if: steps.requirements.outputs.cache-hit != 'true'
-      - name: Code quality checks
         run: |
-          black functions/${{ matrix.functions }} --check
-          isort functions/${{ matrix.functions }} --check
-          mypy --strict functions/${{ matrix.functions }}
+          poetry install
+          sed -i 's/ears.*//g' functions/${{ matrix.functions }}/requirements.txt
+          pip install -r functions/${{ matrix.functions }}/requirements.txt
+        if: steps.requirements.outputs.cache-hit != 'true'
+      - name: Run black
+        run: |
+          poetry run black functions/${{ matrix.functions }} --check
+      - name: Run isort
+        run: |
+          poetry run isort functions/${{ matrix.functions }} --check
+      - name: Run mypy
+        run: |
+          poetry run mypy --strict functions/${{ matrix.functions }}

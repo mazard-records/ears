@@ -1,0 +1,6 @@
+flask
+google-cloud-logging
+google-cloud-pubsub
+pydantic
+slackette>=0.2.3
+ears>=0.1.0
