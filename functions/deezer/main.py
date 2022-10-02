@@ -1,9 +1,10 @@
 from typing import Any
 
+from pydantic import BaseSettings, Field
+
 from ears import handlers
 from ears.providers.deezer import DeezerProvider, DeezerSettings
 from ears.types import Event
-from pydantic import BaseSettings, Field
 
 
 class Destinations(BaseSettings):

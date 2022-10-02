@@ -1,9 +1,10 @@
 from typing import Any
 
+from pydantic import BaseSettings, Field
+
 from ears import handlers
 from ears.providers.beatport import BeatportLoginSettings, BeatportProvider
 from ears.types import Event
-from pydantic import BaseSettings, Field
 
 
 class Destinations(BaseSettings):

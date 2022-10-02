@@ -1,5 +1,3 @@
-from ears.messaging import EventPublisher
-from ears.models import Resource, TrackMatching
 from slackette import (
     Actions,
     Blocks,
@@ -11,6 +9,9 @@ from slackette import (
     Section,
     Style,
 )
+
+from ears.messaging import EventPublisher
+from ears.models import Resource, TrackMatching
 
 
 def _create_matching_url(matching: TrackMatching, action: str) -> str:
@@ -30,33 +31,35 @@ def create_track_matching_notification(matching: TrackMatching) -> Blocks:
     Build a rich interactive Slack notification using BlockKit
     to display the provided matched track entity.
     """
-    return Blocks(blocks=[
-        Divider(),
-        Section(
-            text=Markdown(
-                text=(
-                    f"{_create_matching_markdown_link(matching)}\n"
-                    f"*Release:*\n{matching.metadata.album}\n"
-                    f"*Provider:*\n{matching.destination.provider}"
-                )
+    return Blocks(
+        blocks=[
+            Divider(),
+            Section(
+                text=Markdown(
+                    text=(
+                        f"{_create_matching_markdown_link(matching)}\n"
+                        f"*Release:*\n{matching.metadata.album}\n"
+                        f"*Provider:*\n{matching.destination.provider}"
+                    )
+                ),
+                accessory=Image(image_url=matching.metadata.cover),
             ),
-            accessory=Image(image_url=matching.metadata.cover),
-        ),
-        Actions(
-            elements=[
-                Button(
-                    style=Style.primary,
-                    text=PlainText(text="Approve"),
-                    value=_create_matching_url(matching, "validate")
-                ),
-                Button(
-                    style=Style.danger,
-                    text=PlainText(text="Deny"),
-                    value=_create_matching_url(matching, "invalidate")
-                ),
-            ]
-        )
-    ])
+            Actions(
+                elements=[
+                    Button(
+                        style=Style.primary,
+                        text=PlainText(text="Approve"),
+                        value=_create_matching_url(matching, "validate"),
+                    ),
+                    Button(
+                        style=Style.danger,
+                        text=PlainText(text="Deny"),
+                        value=_create_matching_url(matching, "invalidate"),
+                    ),
+                ]
+            ),
+        ]
+    )
 
 
 def on_matching_feedback_request(path: str) -> None:
@@ -73,9 +76,7 @@ def on_matching_feedback_request(path: str) -> None:
         origin=Resource.from_urn(tokens[2]),
         destination=Resource.from_urn(tokens[3]),
     )
-    publisher = EventPublisher(
-        f"{matching.destination.provider}-update-playlist"
-    )
+    publisher = EventPublisher(f"{matching.destination.provider}-update-playlist")
     if action == "validate":
         publisher(matching)
     elif action == "invalidate":

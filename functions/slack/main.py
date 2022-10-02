@@ -1,25 +1,25 @@
 import json
-
 from functools import lru_cache
 from typing import Any
 
-from ears.models import TrackMatching
-from ears.types import Event
+from domains.matching import (
+    create_track_matching_notification,
+    on_matching_feedback_request,
+)
 from flask import Request, Response, jsonify
 from httpx import post
+from notifications import NotificationFactory
 from pydantic import AnyHttpUrl, BaseSettings, Field
+from router import Router
 from slackette import (
     BlockInteraction,
     InteractionDeleteResponse,
     SlackWebhook,
     verify_slack_signature,
 )
-from domains.matching import (
-    create_track_matching_notification,
-    on_matching_feedback_request,
-)
-from notifications import NotificationFactory
-from router import Router
+
+from ears.models import TrackMatching
+from ears.types import Event
 
 
 class SlackSettings(BaseSettings):
@@ -30,7 +30,7 @@ class SlackSettings(BaseSettings):
     @classmethod
     def signing_secret_provider(cls) -> str:
         return cls().signing
- 
+
 
 @lru_cache(maxsize=1)
 def get_interactivity_router() -> Router:
@@ -38,6 +38,7 @@ def get_interactivity_router() -> Router:
     router.register("matching", on_matching_feedback_request)
     # NOTE: add additional interactivity handler here.
     return router
+
 
 @lru_cache(maxsize=1)
 def get_notification_factory() -> NotificationFactory:

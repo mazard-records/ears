@@ -47,7 +47,6 @@ class AbstractMusicProvider(ABC):
         resource = Resource.from_urn(urn)
         if resource.provider != self.name:
             raise ValueError(
-                f"Provider mismatch, expected {self.name},"
-                f" got {resource.provider}"
+                f"Provider mismatch, expected {self.name}," f" got {resource.provider}"
             )
         return resource

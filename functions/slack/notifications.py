@@ -1,9 +1,10 @@
 from typing import Any, Callable, Dict, Type
 
-from ears.messaging import pydantic_model_from_event
-from ears.types import Event, PydanticModel
 from pydantic import BaseModel
 from slackette import Blocks
+
+from ears.messaging import pydantic_model_from_event
+from ears.types import Event, PydanticModel
 
 
 class NotificationEvent(BaseModel):
@@ -12,11 +13,10 @@ class NotificationEvent(BaseModel):
 
 
 class NotificationFactory(object):
-
     def __init__(self) -> None:
         self._model_factories = {}
         self._notification_factories = {}
-    
+
     def register(
         self,
         model: Type[PydanticModel],
