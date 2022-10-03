@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   test_package:
-    uses: ./tests/core.yaml
+    uses: .github/workflows/tests/core.yaml
   publish_pypi:
     needs: test_package
     runs-on: ubuntu-latest
