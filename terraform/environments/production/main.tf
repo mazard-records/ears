@@ -3,7 +3,7 @@ terraform {
     organization = "mazard-records"
 
     workspaces {
-      name = "ears"
+      name = "ears-production"
     }
   }
   required_providers {
@@ -29,4 +29,13 @@ provider "google" {
 provider "google-beta" {
   project = var.project
   region  = var.project
+}
+
+module "ears_production" {
+  source = "../../modules/ears"
+
+  project           = var.project
+  region            = var.region
+  beatport_wantlist = var.beatport_wantlist
+  deezer_wantlist   = var.deezer_wantlist
 }
