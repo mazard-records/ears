@@ -21,8 +21,8 @@ resource "google_cloudfunctions_function" "target" {
     for_each = var.secrets
 
     content {
-      key     = each.key
-      secret  = each.value
+      key     = secret_environment_variables.key
+      secret  = secret_environment_variables.value
       version = "latest"
     }
   }
