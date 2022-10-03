@@ -20,3 +20,5 @@ tests:
 
 version:
 	@cat pyproject.toml | grep version | cut -d'=' -f2 | tr -d '" '
+
+all: lint tests lint-functions

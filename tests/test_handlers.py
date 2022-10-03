@@ -9,7 +9,14 @@ from ears.handlers import (
     on_search_event,
     on_update_playlist_event,
 )
-from ears.models import Resource, Track, TrackMetadata, TrackSearchQuery
+from ears.models import (
+    Resource,
+    ResourceType,
+    Track,
+    TrackMatching,
+    TrackMetadata,
+    TrackSearchQuery,
+)
 from ears.types import Event, PydanticModel
 
 _FRENCH_CRUSH = Track(
@@ -91,17 +98,18 @@ def test_on_search_event(
     mocker: MockerFixture,
     publisher_mock: Mock,
 ) -> None:
-    query = TrackSearchQuery(
-        album="Delighted",
-        artist="Herr Krank",
-        title="French crush",
-    )
-    event = pydantic_model_to_event(query)
+    event = pydantic_model_to_event(_FRENCH_CRUSH)
     provider = mocker.MagicMock()
     provider.search = mocker.Mock(return_value=[_FRENCH_CRUSH])
     on_search_event(provider, event, "search")
-    provider.search.assert_called_once_with(query)
+    provider.search.assert_called_once_with(_FRENCH_CRUSH.metadata)
     publisher_mock.assert_called_once_with(
         f"projects/ears/topics/search",
-        _FRENCH_CRUSH_DATA,
+        TrackMatching(
+            origin=_FRENCH_CRUSH.resource,
+            destination=_FRENCH_CRUSH.resource,
+            metadata=_FRENCH_CRUSH.metadata,
+        )
+        .json()
+        .encode("utf-8"),
     )

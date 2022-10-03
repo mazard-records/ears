@@ -80,6 +80,7 @@ def test_remove_from_playlist(httpx_mock: HTTPXMock) -> None:
 
 def test_search(httpx_mock: HTTPXMock) -> None:
     query = TrackSearchQuery(
+        album="Off to paradise",
         title="Off to paradise",
         artist="Demuja",
     )

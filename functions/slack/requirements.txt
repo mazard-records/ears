@@ -1,2 +1,2 @@
 ears>=0.1.0
-slackette>=0.2.3
+slackette>=0.2.4

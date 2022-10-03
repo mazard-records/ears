@@ -38,26 +38,16 @@ module "slack_command_webhook" {
 
 }
 
-module "deezer_update_playlist" {
+module "beatport_search" {
   source = "../../cloudfunction/pubsub"
 
-  path   = "deezer"
+  path   = "beatport"
   bucket = google_storage_bucket.functions.name
 
-  name            = "deezer-update-playlist"
-  description     = "Update a target playlist on Deezer"
-  entrypoint      = "on_update_playlist_event"
+  name            = "beatport-search-track"
+  description     = "Search for a track using ears's protocol TrackSearchQuery input"
+  entrypoint      = "on_search_event"
   service_account = google_service_account.beatport.email
-  publishers      = [google_service_account.slack.service_account]
-
-  envvars = {
-    DEEEZER_WANTLIST = var.deezer_wantlist
-  }
-
-  secrets = {
-    DEEZER_ACCESS_TOKEN = google_secret_manager_secret.deezer_access_token.secret_id
-  }
-
 }
 
 module "beatport_update_playlist" {
@@ -82,16 +72,48 @@ module "beatport_update_playlist" {
   }
 }
 
-module "beatport_search" {
+module "deezer_broadcast_playlist" {
   source = "../../cloudfunction/pubsub"
 
-  path   = "beatport"
+  path   = "deezer"
   bucket = google_storage_bucket.functions.name
 
-  name            = "beatport-search-track"
-  description     = "Search for a track using ears's protocol TrackSearchQuery input"
-  entrypoint      = "on_search_event"
+  name            = "deezer-broadcast-playlist"
+  description     = "Broadcast a Deezer playlist content to matching topic"
+  entrypoint      = "on_update_playlist_event"
+  service_account = google_service_account.deezer.email
+  publishers      = [google_service_account.slack.service_account]
+
+  envvars = {
+    DESTINATION_BROADCAST = beatport_search.topic
+  }
+
+  secrets = {
+    DEEZER_ACCESS_TOKEN = google_secret_manager_secret.deezer_access_token.secret_id
+  }
+
+}
+
+module "deezer_update_playlist" {
+  source = "../../cloudfunction/pubsub"
+
+  path   = "deezer"
+  bucket = google_storage_bucket.functions.name
+
+  name            = "deezer-update-playlist"
+  description     = "Update a target playlist on Deezer"
+  entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
+  publishers      = [google_service_account.slack.service_account]
+
+  envvars = {
+    DEEEZER_WANTLIST = var.deezer_wantlist
+  }
+
+  secrets = {
+    DEEZER_ACCESS_TOKEN = google_secret_manager_secret.deezer_access_token.secret_id
+  }
+
 }
 
 module "slack_push_notification" {

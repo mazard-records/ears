@@ -1,30 +1,28 @@
 import json
-
 from typing import Any, Callable, Dict, Optional
 from urllib.parse import urlparse
 
 from flask import Request, Response, jsonify
 from httpx import post
 from pydantic import AnyHttpUrl, BaseModel
-from slackette import (
-    Blocks,
-    BlockInteraction,
-    InteractionDeleteResponse,
-    Markdown,
-    Section,
-)
+from slackette import BlockInteraction, InteractionDeleteResponse, MarkdownBlocks
 
 
 class CommandSyntaxError(ValueError):
-    pass
+    def to_response(self) -> Response:
+        return jsonify(MarkdownBlocks(":warning: invalid syntax\n" f"> {self}"))
 
 
-class EmptyCommandError(ValueError):
-    pass
+def EmptyCommandResponse() -> Response:
+    return jsonify(MarkdownBlocks(":warning: empty command received"))
 
 
-class InvalidCommandError(ValueError):
-    pass
+def InvalidCommandResponse(command: str) -> Response:
+    return jsonify(MarkdownBlocks(f":warning: unknown command {command}"))
+
+
+def ExecutionErrorResponse(e: Exception) -> Response:
+    return jsonify(MarkdownBlocks(f":x: unexpected error\n> {e}"))
 
 
 class CommandRequestPayload(BaseModel):
@@ -47,10 +45,7 @@ class CommandRequestPayload(BaseModel):
 def CommandRequest(request: Request) -> CommandRequestPayload:
     body = request.get_data().decode("utf-8")
     return CommandRequestPayload(
-        **dict(
-            component.split("=")
-            for component in body.split("&")
-        )
+        **dict(component.split("=") for component in body.split("&"))
     )
 
 
@@ -58,9 +53,7 @@ def InteractionRequest(request: Request) -> BlockInteraction:
     payload = request.form.get("payload")
     if payload is None:
         raise ValueError("Missing expected payload")
-    return BlockInteraction(
-        **json.loads(payload)
-    )
+    return BlockInteraction(**json.loads(payload))
 
 
 CommandHandlerType = Callable[[CommandRequestPayload], Optional[Response]]
@@ -72,7 +65,9 @@ class Router:
     COMMAND = "/ears"
     SCHEME = "ears"
 
-    def __init__(self, ) -> None:
+    def __init__(
+        self,
+    ) -> None:
         self._command_handlers: Dict[str, CommandHandlerType] = {}
         self._interaction_handlers: Dict[str, InteractionHandlerType] = {}
 
@@ -96,29 +91,19 @@ class Router:
     ) -> Optional[Response]:
         payload = CommandRequest(request)
         if payload.command != self.COMMAND:
-            raise InvalidCommandError(f"Unsupported command {payload.command}")
+            return InvalidCommandResponse(payload.command)
         args = payload.text.split()
         if len(args) == 0:
-            raise EmptyCommandError()
+            return EmptyCommandResponse()
         subcommand = self._command_handlers.get(args[0])
         if subcommand is None:
-            raise InvalidCommandError(f"Unsupported subcommand {subcommand}")
+            return InvalidCommandResponse(f"{payload.command} subcommand")
         try:
             subcommand(payload)
         except CommandSyntaxError as e:
-            return jsonify(
-                Blocks(
-                    blocks=[
-                        Section(
-                            text=Markdown(
-                                text=f":warning: invalid syntax\n> {e}"
-                            )
-                        )
-                    ]
-                ).dict()
-            )
+            return e.to_response()
         except Exception as e:
-            pass
+            return ExecutionErrorResponse(e)
         return None
 
     def serve_interaction_request(

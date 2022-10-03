@@ -41,7 +41,7 @@ class Resource(BaseModel):
 
 
 class TrackSearchQuery(BaseModel):
-    album: str = None
+    album: str
     artist: str
     title: str
 

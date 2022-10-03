@@ -1,20 +1,14 @@
 from typing import Any
 
+from commands import on_broadcast_command, on_buy_command
 from flask import Request, Response, jsonify
+from interactions import on_matching_feedback_request
+from notifications import notification_from_event
 from pydantic import AnyHttpUrl, BaseSettings, Field
+from router import Router
 from slackette import SlackWebhook, verify_slack_signature
 
 from ears.types import Event
-
-from commands import (
-    on_broadcast_command,
-    on_buy_command,
-)
-from interactions import (
-    on_matching_feedback_request,
-)
-from notifications import notification_from_event
-from router import Router
 
 
 class SlackSettings(BaseSettings):
@@ -27,7 +21,7 @@ class SlackSettings(BaseSettings):
         return cls().signing
 
 
-@verify_slack_signature(  # type: ignore
+@verify_slack_signature(
     signing_secret=SlackSettings.signing_secret_provider,
 )
 def on_command_webhook(request: Request) -> Response:
@@ -37,11 +31,13 @@ def on_command_webhook(request: Request) -> Response:
     router = Router()
     router.register_command("broadcast", on_broadcast_command)
     router.register_command("buy", on_buy_command)
-    router.serve_command_request(request)
-    return jsonify(None)
+    response = router.serve_command_request(request)
+    if isinstance(response, Response):
+        return response
+    return jsonify(response)
 
 
-@verify_slack_signature(  # type: ignore
+@verify_slack_signature(
     signing_secret=SlackSettings.signing_secret_provider,
 )
 def on_interactivity_webhook(request: Request) -> Response:
