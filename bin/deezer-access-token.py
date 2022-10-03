@@ -7,9 +7,7 @@ from threading import Thread
 from typing import Any, Optional
 from urllib.parse import urlparse
 
-
 from httpx import get
-
 
 DEEZER_CONNECT = "https://connect.deezer.com/oauth"
 DEEZER_CONNECT_AUTH = f"{DEEZER_CONNECT}/auth.php"
