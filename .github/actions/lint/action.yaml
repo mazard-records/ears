@@ -9,7 +9,10 @@ runs:
   steps:
     - name: Run black
       run: poetry run black ${{ inputs.targets }} --check
+      shell: bash
     - name: Run isort
       run: poetry run isort ${{ inputs.targets }} --check
+      shell: bash
     - name: Run mypy
       run: poetry run mypy --strict ${{ inputs.targets }}
+      shell: bash

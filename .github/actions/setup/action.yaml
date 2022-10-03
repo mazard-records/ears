@@ -10,6 +10,7 @@ runs:
         cache: 'pip'
     - name: Set up poetry
       run: pip install poetry
+      shell: bash
     - name: Cache poetry
       id: poetry
       uses: actions/cache@v2
@@ -18,5 +19,7 @@ runs:
         key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
     - name: Setup poetry
       run: poetry config virtualenvs.in-project true
+      shell: bash
     - name: Install poetry dependencies
       run: poetry install
+      shell: bash
