@@ -12,3 +12,8 @@ variable "beatport_wantlist" {
   description = "Identifier of the beatport wantlist to use"
   type        = string
 }
+
+variable "deezer_wantlist" {
+  description = "Identifier of the deezer wantlist to use"
+  type        = string
+}

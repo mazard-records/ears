@@ -57,7 +57,7 @@ def on_command_webhook(request: Request) -> Response:
 
 
 @verify_slack_signature(signing_secret=SlackSettings.signing_secret_provider)
-def on_interactive_webhook(request: Request) -> Response:
+def on_interactivity_webhook(request: Request) -> Response:
     """
     HTTP webhook for Slack interactivity callback. Evaluate actions
     payload as internal protocol to trigger associated handlers.

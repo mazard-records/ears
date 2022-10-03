@@ -8,32 +8,6 @@ provider "google-beta" {
   region  = var.project
 }
 
-resource "google_project_service" "apis" {
-  for_each = toset([
-    "cloudbuild",
-    "cloudfunctions",
-    "iam",
-    "pubsub",
-    "secretmanager",
-    "servicenetworking",
-    "storage",
-    "vpcaccess",
-    "workflows",
-  ])
-
-  service            = "${each.key}.googleapis.com"
-  disable_on_destroy = false
-}
-
-resource "google_storage_bucket" "functions" {
-  depends_on = [
-    google_project_service.apis
-  ]
-
-  location = upper(substr(var.region, 0, 2))
-  name     = "functions"
-}
-
 module "slack" {
   depends_on = [google_storage_bucket.functions]
   source     = "../ears-slack"
@@ -56,7 +30,8 @@ module "cloudlogging" {
 
   project = var.project
   writers = [
-    module.beatport.service_account,
+    module.matching.beatport_service_account,
+    module.matching.deezer_service_account,
     module.slack.service_account,
   ]
 }

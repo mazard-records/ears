@@ -17,3 +17,6 @@ lint:
 
 tests:
 	poetry run pytest tests
+
+version:
+	@cat pyproject.toml | grep version | cut -d'=' -f2 | tr -d '" '
