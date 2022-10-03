@@ -85,7 +85,7 @@ module "deezer_broadcast_playlist" {
   publishers      = [google_service_account.slack.service_account]
 
   envvars = {
-    DESTINATION_BROADCAST = beatport_search.topic
+    DESTINATION_BROADCAST = module.beatport_search.topic
   }
 
   secrets = {
