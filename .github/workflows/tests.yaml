@@ -16,6 +16,8 @@ jobs:
       - name: Run pytest
         run: poetry run pytest tests
   terraform:
+    env:
+      TFE_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
     runs-on: ubuntu-latest
     defaults:
       run:
