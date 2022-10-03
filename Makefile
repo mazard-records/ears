@@ -10,10 +10,15 @@ lint-functions:
 		poetry run mypy --strict functions/$${function}; \
 	done;
 
-lint:
+lint-terraform:
+	cd terraform && terraform fmt
+
+lint-package:
 	poetry run black ears tests
 	poetry run isort ears tests
 	poetry run mypy --strict ears
+
+lint: lint-package lint-functions lint-terraform
 
 tests:
 	poetry run pytest tests
@@ -35,8 +40,8 @@ git-deploy:
 	git commit -m "🔖 deploy $$(cat pyproject.toml | grep version | cut -d'=' -f2 | tr -d '" ')"
 	git push origin main
 
-deploy-patch: bump-patch git-deploy
-deploy-minor: bump-minor git-deploy
-deploy-major: bump-major git-deploy
+deploy-patch: lint bump-patch git-deploy
+deploy-minor: lint bump-minor git-deploy
+deploy-major: lint bump-major git-deploy
 
-all: lint tests lint-functions
+all: lint tests
