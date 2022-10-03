@@ -1,5 +1,5 @@
 module "slack_interactivity_webhook" {
-  source = "../../cloudfunction/https"
+  source = "./modules/cloudfunction/https"
 
   path   = "slack"
   bucket = google_storage_bucket.functions.name
@@ -19,7 +19,7 @@ module "slack_interactivity_webhook" {
 }
 
 module "slack_command_webhook" {
-  source = "../../cloudfunction/https"
+  source = "./modules/cloudfunction/https"
 
   path   = "slack"
   bucket = google_storage_bucket.functions.name
@@ -39,7 +39,7 @@ module "slack_command_webhook" {
 }
 
 module "beatport_search" {
-  source = "../../cloudfunction/pubsub"
+  source = "./modules/cloudfunction/pubsub"
 
   path   = "beatport"
   bucket = google_storage_bucket.functions.name
@@ -51,7 +51,7 @@ module "beatport_search" {
 }
 
 module "beatport_update_playlist" {
-  source = "../../cloudfunction/pubsub"
+  source = "./modules/cloudfunction/pubsub"
 
   path   = "beatport"
   bucket = google_storage_bucket.functions.name
@@ -73,7 +73,7 @@ module "beatport_update_playlist" {
 }
 
 module "deezer_broadcast_playlist" {
-  source = "../../cloudfunction/pubsub"
+  source = "./modules/cloudfunction/pubsub"
 
   path   = "deezer"
   bucket = google_storage_bucket.functions.name
@@ -95,7 +95,7 @@ module "deezer_broadcast_playlist" {
 }
 
 module "deezer_update_playlist" {
-  source = "../../cloudfunction/pubsub"
+  source = "./modules/cloudfunction/pubsub"
 
   path   = "deezer"
   bucket = google_storage_bucket.functions.name
@@ -117,7 +117,7 @@ module "deezer_update_playlist" {
 }
 
 module "slack_push_notification" {
-  source = "../../cloudfunction/pubsub"
+  source = "./modules/cloudfunction/pubsub"
 
   path   = "slack"
   bucket = google_storage_bucket.functions.name
