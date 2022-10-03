@@ -5,11 +5,11 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_pubsub_topic_iam_member" "publisher" {
-  for_each = toset(var.publishers)
+  for_each = var.publishers
 
   topic  = google_pubsub_topic.topic.name
   role   = "roles/pubsub.publisher"
-  member = "serviceAccount:${each.key}"
+  member = "serviceAccount:${each.value}"
 }
 
 resource "google_pubsub_topic_iam_member" "subscriber" {

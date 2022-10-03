@@ -47,7 +47,7 @@ variable "secrets" {
 }
 
 variable "publishers" {
-  default     = []
-  description = "List of service account allowed to publish event"
-  type        = list(string)
+  default     = {}
+  description = "Map of service account allowed to publish event"
+  type        = map
 }

@@ -64,7 +64,9 @@ module "beatport_update_playlist" {
   description     = "Update a target playlist on Beatport"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
-  publishers      = [google_service_account.slack.email]
+  publishers      = {
+    slack = google_service_account.slack.email
+  }
 
   envvars = {
     BEATPORT_WANTLIST = var.beatport_wantlist
@@ -86,7 +88,9 @@ module "deezer_broadcast_playlist" {
   description     = "Broadcast a Deezer playlist content to matching topic"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.deezer.email
-  publishers      = [google_service_account.slack.email]
+  publishers      = {
+    slack = google_service_account.slack.email
+  }
 
   envvars = {
     DESTINATION_BROADCAST = module.beatport_search.topic
@@ -108,7 +112,9 @@ module "deezer_update_playlist" {
   description     = "Update a target playlist on Deezer"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
-  publishers      = [google_service_account.slack.email]
+  publishers      = {
+    slack = google_service_account.slack.email
+  }
 
   envvars = {
     DEEEZER_WANTLIST = var.deezer_wantlist
@@ -130,7 +136,9 @@ module "slack_push_notification" {
   description     = "Slack bot that produces interactive matching notification"
   entrypoint      = "on_push_notification_event"
   service_account = google_service_account.slack.email
-  publishers      = [google_service_account.beatport.email]
+  publishers      = {
+    beatport = google_service_account.beatport.email
+  }
 
   secrets = {
     SLACK_SIGNING_KEY = google_secret_manager_secret.slack_signing_key.secret_id
