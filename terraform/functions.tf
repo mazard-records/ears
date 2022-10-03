@@ -13,7 +13,7 @@ module "slack_interactivity_webhook" {
 
   secrets = {
     SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK = google_secret_manager_secret.webhook.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.webhook.secret_id
   }
 
 }
@@ -33,7 +33,7 @@ module "slack_command_webhook" {
 
   secrets = {
     SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK = google_secret_manager_secret.webhook.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.webhook.secret_id
   }
 
 }
@@ -130,6 +130,6 @@ module "slack_push_notification" {
 
   secrets = {
     SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK = google_secret_manager_secret.webhook.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.webhook.secret_id
   }
 }
