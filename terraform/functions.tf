@@ -12,8 +12,8 @@ module "slack_interactivity_webhook" {
   all_users       = true
 
   secrets = {
-    SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK = google_secret_manager_secret.webhook.secret_id
+    SLACK_SIGNING_KEY = google_secret_manager_secret.slack_signing_key.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.slack_webhook.secret_id
   }
 
 }
@@ -32,8 +32,8 @@ module "slack_command_webhook" {
   all_users       = true
 
   secrets = {
-    SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK = google_secret_manager_secret.webhook.secret_id
+    SLACK_SIGNING_KEY = google_secret_manager_secret.slack_signing_key.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.slack_webhook.secret_id
   }
 
 }
@@ -60,7 +60,7 @@ module "beatport_update_playlist" {
   description     = "Update a target playlist on Beatport"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
-  publishers      = [google_service_account.slack.service_account]
+  publishers      = [google_service_account.slack.email]
 
   envvars = {
     BEATPORT_WANTLIST = var.beatport_wantlist
@@ -82,10 +82,10 @@ module "deezer_broadcast_playlist" {
   description     = "Broadcast a Deezer playlist content to matching topic"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.deezer.email
-  publishers      = [google_service_account.slack.service_account]
+  publishers      = [google_service_account.slack.email]
 
   envvars = {
-    DESTINATION_BROADCAST = beatport_search.topic
+    DESTINATION_BROADCAST = module.beatport_search.topic
   }
 
   secrets = {
@@ -104,7 +104,7 @@ module "deezer_update_playlist" {
   description     = "Update a target playlist on Deezer"
   entrypoint      = "on_update_playlist_event"
   service_account = google_service_account.beatport.email
-  publishers      = [google_service_account.slack.service_account]
+  publishers      = [google_service_account.slack.email]
 
   envvars = {
     DEEEZER_WANTLIST = var.deezer_wantlist
@@ -129,7 +129,7 @@ module "slack_push_notification" {
   publishers      = [google_service_account.beatport.email]
 
   secrets = {
-    SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK = google_secret_manager_secret.webhook.secret_id
+    SLACK_SIGNING_KEY = google_secret_manager_secret.slack_signing_key.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.slack_webhook.secret_id
   }
 }

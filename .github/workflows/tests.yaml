@@ -15,6 +15,17 @@ jobs:
           targets: "ears tests"
       - name: Run pytest
         run: poetry run pytest tests
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v2
+      - run: terraform fmt -check
+      - run: terraform init
+      - run: terraform validate -no-color
   functions:
     needs: package
     runs-on: ubuntu-latest
