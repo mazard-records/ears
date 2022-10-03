@@ -9,7 +9,7 @@ jobs:
       pull-requests: write
     env:
       TF_ROOT: terraform
-      INFRACOST_TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
+      INFRACOST_TERRAFORM_CLOUD_TOKEN: ${{ secrets.TF_API_TOKEN }}
       INFRACOST_TERRAFORM_CLOUD_HOST: app.terraform.io
     steps:
       - name: Setup Infracost

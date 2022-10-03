@@ -5,10 +5,9 @@ runs:
   steps:
     - uses: actions/checkout@v2
     - uses: hashicorp/setup-terraform@v2
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
     - run: terraform init
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
       shell: bash
       working-directory: terraform
     - run: |
@@ -18,8 +17,5 @@ runs:
           -var="project=${{ secrets.GCP _PROJECT }}" \
           -var="beatport_wantlist=${{ secrets.BEATPORT_WANTLIST }}" \
           -var="deezer_wantlist=${{ secrets.DEEZER_WANTLIST }}"
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
       shell: bash
       working-directory: terraform
