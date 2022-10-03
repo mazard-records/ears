@@ -8,6 +8,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: ./.github/actions/setup.yaml
       - uses: ./.github/actions/lint.yaml
         with:
@@ -24,6 +25,7 @@ jobs:
           - deezer
           - slack
     steps:
+      - uses: actions/checkout@v2
       - uses: ./.github/actions/setup.yaml
       - name: Install function dependencies
         run: |
