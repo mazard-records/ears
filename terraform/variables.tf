@@ -4,6 +4,7 @@ variable "project" {
 }
 
 variable "region" {
+  default     = "europe-west1"
   description = "Default region for resources"
   type        = string
 }

@@ -1,0 +1,25 @@
+name: "Deploy"
+description: "Run terraform apply"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - uses: hashicorp/setup-terraform@v2
+    - run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
+      shell: bash
+      working-directory: terraform
+    - run: |
+        terraform apply \
+          -auto-approve \ 
+          -input=False \
+          -var="project=${{ secrets.GCP _PROJECT }}" \
+          -var="beatport_wantlist=${{ secrets.BEATPORT_WANTLIST }}" \
+          -var="deezer_wantlist=${{ secrets.DEEZER_WANTLIST }}"
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
+      shell: bash
+      working-directory: terraform

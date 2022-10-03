@@ -22,22 +22,24 @@ jobs:
           ref: '${{ github.event.pull_request.base.ref }}'
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=${TF_ROOT} \
-                              --format=json \
-                              --out-file=/tmp/infracost-base.json
+          infracost breakdown \
+            --path=${TF_ROOT} \
+            --format=json \
+            --out-file=/tmp/infracost-base.json
       - name: Checkout PR branch
         uses: actions/checkout@v2
-
       - name: Generate Infracost diff
         run: |
-          infracost diff --path=${TF_ROOT} \
-                          --format=json \
-                          --compare-to=/tmp/infracost-base.json \
-                          --out-file=/tmp/infracost.json
+          infracost diff \
+            --path=${TF_ROOT} \
+            --format=json \
+            --compare-to=/tmp/infracost-base.json \
+            --out-file=/tmp/infracost.json
       - name: Post Infracost comment
         run: |
-            infracost comment github --path=/tmp/infracost.json \
-                                     --repo=$GITHUB_REPOSITORY \
-                                     --github-token=${{github.token}} \
-                                     --pull-request=${{github.event.pull_request.number}} \
-                                     --behavior=update
+            infracost comment github \
+              --path=/tmp/infracost.json \
+              --repo=$GITHUB_REPOSITORY \
+              --github-token=${{github.token}} \
+              --pull-request=${{github.event.pull_request.number}} \
+              --behavior=update
