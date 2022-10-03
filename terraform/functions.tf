@@ -44,6 +44,10 @@ module "beatport_search" {
   path   = "beatport"
   bucket = google_storage_bucket.functions.name
 
+  envvars = {
+    DESTINATION_SEARCH = module.slack_push_notification.topic
+  }
+
   name            = "beatport-search-track"
   description     = "Search for a track using ears's protocol TrackSearchQuery input"
   entrypoint      = "on_search_event"
