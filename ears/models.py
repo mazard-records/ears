@@ -40,10 +40,13 @@ class Resource(BaseModel):
         return f"urn:{self.provider}:{self.type}:{self.id}"
 
 
-class TrackMetadata(BaseModel):
-    album: str
+class TrackSearchQuery(BaseModel):
+    album: str = None
     artist: str
     title: str
+
+
+class TrackMetadata(TrackSearchQuery):
     cover: AnyHttpUrl
     preview: Optional[AnyHttpUrl] = None
 
@@ -57,9 +60,3 @@ class TrackMatching(BaseModel):
     origin: Resource
     destination: Resource
     metadata: Optional[TrackMetadata] = None
-
-
-class TrackSearchQuery(BaseModel):
-    album: Optional[str] = None
-    artist: str
-    title: str

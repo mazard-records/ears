@@ -1,68 +1,10 @@
 from typing import Any, Dict, cast
 
 from pydantic import BaseSettings, Field
-from slackette import (
-    Actions,
-    Blocks,
-    Button,
-    Divider,
-    Image,
-    Markdown,
-    PlainText,
-    Section,
-    Style,
-)
 
 from ears.events import PlaylistAction, PlaylistEvent
 from ears.messaging import publish
 from ears.models import Resource, ResourceType, TrackMatching
-
-
-def _create_matching_url(matching: TrackMatching, action: str) -> str:
-    return (
-        f"ears://matching/{action}"
-        f"/{matching.origin.to_urn()}"
-        f"/{matching.destination.to_urn()}"
-    )
-
-
-def create_track_matching_notification(matching: TrackMatching) -> Blocks:
-    """
-    Build a rich interactive Slack notification using BlockKit
-    to display the provided matched track entity.
-    """
-    if matching.metadata is None:
-        raise ValueError("Cannot notify empty metadata")
-    return Blocks(
-        blocks=[
-            Divider(),
-            Section(
-                text=Markdown(
-                    text=(
-                        f"*<{matching.destination.url}"
-                        f"|{matching.metadata.title} - {matching.metadata.artist}>*\n"
-                        f"*Release:*\n{matching.metadata.album}\n"
-                        f"*Provider:*\n{matching.destination.provider}"
-                    )
-                ),
-                accessory=Image(image_url=matching.metadata.cover),
-            ),
-            Actions(
-                elements=[
-                    Button(
-                        style=Style.primary,
-                        text=PlainText(text="Approve"),
-                        value=_create_matching_url(matching, "validate"),
-                    ),
-                    Button(
-                        style=Style.danger,
-                        text=PlainText(text="Deny"),
-                        value=_create_matching_url(matching, "invalidate"),
-                    ),
-                ]
-            ),
-        ]
-    )
 
 
 class MatchingPlaylists(BaseSettings):

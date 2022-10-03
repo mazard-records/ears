@@ -1,6 +1,6 @@
 from .events import PlaylistAction, PlaylistEvent
 from .messaging import EventPublisher, pydantic_model_from_event
-from .models import TrackSearchQuery
+from .models import Track, TrackMatching
 from .providers import AbstractMusicProvider
 from .types import Event
 
@@ -39,10 +39,16 @@ def on_search_event(
     event: Event,
     destination: str,
 ) -> None:
-    query = pydantic_model_from_event(TrackSearchQuery, event)
-    results = provider.search(query)
+    query = pydantic_model_from_event(Track, event)
+    results = provider.search(query.metadata)
     if len(results) == 0:
-        # TODO: figure out what to do here.
+        # TODO: figure out what to do here ?
         return
     publisher = EventPublisher(destination)
-    publisher(results[0])
+    publisher(
+        TrackMatching(
+            origin=query.resource,
+            destination=results[0].resource,
+            metadata=results[0].metadata,
+        )
+    )
