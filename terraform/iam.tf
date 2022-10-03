@@ -17,15 +17,15 @@ resource "google_service_account" "slack" {
 }
 
 resource "google_project_iam_binding" "logging" {
-  for_each = toset([
-    google_service_account.beatport.email,
-    google_service_account.deezer.email,
-    google_service_account.slack.email,
-  ])
+  for_each = {
+    beatport = google_service_account.beatport.email,
+    deezer   = google_service_account.deezer.email,
+    slack    = google_service_account.slack.email,
+  }
 
   project = var.project
   role    = "roles/logging.logWriter"
   members = [
-    "serviceAccount:${each.key}"
+    "serviceAccount:${each.value}"
   ]
 }
