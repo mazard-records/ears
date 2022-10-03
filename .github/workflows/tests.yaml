@@ -1,0 +1,11 @@
+name: Tests
+on:
+  pull_request:
+    branches:    
+      - main
+jobs:
+  test_package:
+    uses: ./tests/core.yaml
+  test_cloud_functions:
+    needs: test_package
+    uses: ./tests/functions.yaml

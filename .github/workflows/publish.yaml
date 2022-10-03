@@ -1,12 +1,13 @@
 name: Publish
 on:
-  workflow_run:
-    workflows: ['Core']
-    branches: [main]
-    types: 
-      - completed
+  push:
+    branches:
+      - main
 jobs:
+  test_package:
+    uses: ./tests/core.yaml
   publish_pypi:
+    needs: test_package
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:

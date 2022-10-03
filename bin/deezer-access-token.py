@@ -4,7 +4,7 @@ import webbrowser
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from queue import Queue
 from threading import Thread
-from typing import Any
+from typing import Any, Optional
 from urllib.parse import urlparse
 
 
@@ -29,9 +29,11 @@ class DeezerAuthServer(Thread):
         self._application_id = application_id
         self._secret_id = secret_id
         self._queue = queue
-        self._server = None
+        self._server: Optional[HTTPServer] = None
 
     def shutdown(self) -> None:
+        if self._server is None:
+            raise IOError("Server is not started")
         self._server.shutdown()
 
     def run(self, *args: Any, **kwargs: Any) -> None:
@@ -39,7 +41,10 @@ class DeezerAuthServer(Thread):
         class DeezerRequestHandler(BaseHTTPRequestHandler):
             def do_GET(self) -> None:
                 query = urlparse(self.path).query
-                components = dict(component.split("=") for component in query.split("&"))
+                components = dict(
+                    component.split("=")
+                    for component in query.split("&")
+                )
                 code = components.get("code")
                 response = get(
                     f"{DEEZER_CONNECT_TOKEN}"
@@ -48,6 +53,7 @@ class DeezerAuthServer(Thread):
                     f"&code={code}"
                     "&output=json"
                 )
+                response.raise_for_status()
                 result = response.json()
                 token = result.get("access_token")
                 this._queue.put(token)
@@ -70,7 +76,7 @@ if __name__ == "__main__":
     secret_id = args.secret_id
     if application_id is None or secret_id is None:
         raise ValueError("Missing application and secret ids")
-    queue = Queue()
+    queue = Queue(maxsize=-1)  # type: ignore
     print(f":: start DeezerAuthServer in background")
     server = DeezerAuthServer(application_id, secret_id, queue)
     server.start()

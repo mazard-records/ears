@@ -1,11 +1,6 @@
-name: Core
+name: "Tests ears package"
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:    
-      - main
+  workflow_call:
 jobs:
   tests:
     runs-on: ubuntu-latest
