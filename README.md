@@ -20,8 +20,8 @@ The following table list supported music providers:
 
 ## Deploy your custom instance with Terraform
 
-My personal is deployed using Terraform Cloud, but you can
-deploy your own by running Terraform locally:
+My personal instance is deployed using Terraform Cloud, but you can deploy
+your own by running Terraform locally:
 
 ```bash
 $ git clone https://github.com/mazard-records/ears
@@ -30,16 +30,17 @@ $ terraform init
 $ terraform apply -auto-approve
 ```
 
+> :warning: First deployment will fail as created secrets would not be filled.
+> You will need to fill secrets and then rerun deployment process.
+
 You will need to set following variables to make it work:
 
 | Name | Description |
 | ---- | ----------- |
-| project           | Target GCP project id |
-| region            | Target region for resources (default to `europe-west1`) |
-| beatport_wantlist | Identifier of the Beatport playlist that will receive matching |
-| deezer_wantlist   | Identifier of the Deezer playlist that acts as source |
+| `project`           | Target GCP project id |
+| `region`            | Target region for resources (default to `europe-west1`) |
+| `beatport_wantlist` | Identifier of the Beatport playlist that will receive matching |
+| `deezer_wantlist`   | Identifier of the Deezer playlist that acts as source |
 
 The terraform configuration will output various URL that you will need to use
-in order to configure your dedicated Slack application to work. Once the project
-is successfully deployed you will also need to fill secrets that have been created
-on GCP.
+in order to configure your dedicated Slack application to work.
