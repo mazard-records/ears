@@ -1,4 +1,4 @@
-name: Publish
+name: Main
 on:
   push:
     branches:
@@ -24,3 +24,6 @@ jobs:
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
       - name: Publish to PyPi
         run: poetry publish
+  deploy:
+    needs: Publish
+    uses: ./.github/workflows/deploy.yaml
