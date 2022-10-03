@@ -1,0 +1,15 @@
+name: "Lint"
+description: "Run black, isort and mypy"
+inputs:
+  targets:
+    description: "Directory to execute step from"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run black
+      run: poetry run black ${{ inputs.targets }} --check
+    - name: Run isort
+      run: poetry run isort ${{ inputs.targets }} --check
+    - name: Run mypy
+      run: poetry run mypy --strict ${{ inputs.targets }}

@@ -4,8 +4,30 @@ on:
     branches:    
       - main
 jobs:
-  test_package:
-    uses: .github/workflows/tests/core.yaml
-  test_cloud_functions:
-    needs: test_package
-    uses: .github/workflows/tests/functions.yaml
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup.yaml
+      - uses: ./.github/actions/lint.yaml
+        with:
+          targets: "ears tests"
+      - name: Run pytest
+        run: poetry run pytest tests
+  functions:
+    needs: package
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        functions:
+          - beatport
+          - deezer
+          - slack
+    steps:
+      - uses: ./.github/actions/setup.yaml
+      - name: Install function dependencies
+        run: |
+          sed -i 's/ears.*//g' functions/${{ matrix.functions }}/requirements.txt
+          pip install -r functions/${{ matrix.functions }}/requirements.txt
+      - uses: ./.github/actions/lint.yaml
+        with:
+          targets: functions/${{ matrix.functions }}

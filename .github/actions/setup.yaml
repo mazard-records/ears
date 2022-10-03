@@ -1,0 +1,23 @@
+name: "Setup"
+description: "Setup environment for testing"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+        cache: 'pip'
+    - name: Set up poetry
+      run: pip install poetry
+    - name: Cache poetry
+      id: poetry
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Setup poetry
+      run: poetry config virtualenvs.in-project true
+    - name: Install poetry dependencies
+      run: poetry install
