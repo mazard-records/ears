@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup.yaml
-      - uses: ./.github/actions/lint.yaml
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
         with:
           targets: "ears tests"
       - name: Run pytest
@@ -26,11 +26,11 @@ jobs:
           - slack
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup.yaml
+      - uses: ./.github/actions/setup
       - name: Install function dependencies
         run: |
           sed -i 's/ears.*//g' functions/${{ matrix.functions }}/requirements.txt
           pip install -r functions/${{ matrix.functions }}/requirements.txt
-      - uses: ./.github/actions/lint.yaml
+      - uses: ./.github/actions/lint
         with:
           targets: functions/${{ matrix.functions }}
