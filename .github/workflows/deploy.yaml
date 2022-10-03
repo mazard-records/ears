@@ -6,14 +6,16 @@ jobs:
     environment: staging
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/deploy
-        with:
-          environment: staging
+      - uses: actions/checkout@v2
+      - run: echo "EARS_VERSION=$(make version)" >> $GITHUB_ENV
+      - run: git tag ${{ env.EARS_VERSION }}-rc.${{ github.run_id }}
+      - run: git push origin ${{ env.EARS_VERSION }}-rc.${{ github.run_id }}
   production:
     needs: staging
     environment: production
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/deploy
-        with:
-          environment: production
+      - uses: actions/checkout@v2
+      - run: echo "EARS_VERSION=$(make version)" >> $GITHUB_ENV
+      - run: git tag ${{ env.EARS_VERSION }}
+      - run: git push origin ${{ env.EARS_VERSION }}
