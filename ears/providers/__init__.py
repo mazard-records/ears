@@ -5,7 +5,6 @@ from ..models import Resource, Track, TrackSearchQuery
 
 
 class AbstractMusicProvider(ABC):
-
     @abstractproperty
     def name(self) -> str:
         pass
