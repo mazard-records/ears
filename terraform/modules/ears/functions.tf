@@ -129,7 +129,7 @@ module "slack_push_notification" {
   publishers      = [google_service_account.beatport.email]
 
   secrets = {
-    SLACK_SIGNING_KEY = google_secret_manager_secret.signing_secret.secret_id
-    SLACK_WEBHOOK     = google_secret_manager_secret.webhook.secret_id
+    SLACK_SIGNING_KEY = google_secret_manager_secret.slack_signing_secret.secret_id
+    SLACK_WEBHOOK     = google_secret_manager_secret.slack_webhook.secret_id
   }
 }
