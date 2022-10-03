@@ -7,9 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: ./.github/actions/deploy
+        with:
+          environment: staging
   production:
     needs: staging
     environment: production
     runs-on: ubuntu-latest
     steps:
       - uses: ./.github/actions/deploy
+        with:
+          environment: production
